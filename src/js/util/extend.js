@@ -12,5 +12,5 @@ define(function() {
     }
 
     return arguments[0];
-  }
+  };
 });

@@ -4,5 +4,5 @@ define(function() {
     return array.filter(function(object) {
       return object[key] === value;
     })[0];
-  }
+  };
 });

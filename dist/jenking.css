@@ -1,7 +1,0 @@
-#inspector {
-}
-
-#inspector pre.console {
-  max-height: 320px;
-  overflow: auto;
-}

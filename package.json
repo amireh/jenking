@@ -1,0 +1,46 @@
+{
+  "name": "JENKING",
+  "description": "Monitor and manage Jenkins jobs triggered by Gerrit.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/amireh/jenking",
+  "author": {
+    "name": "Ahmad Amireh",
+    "email": "ahmad@algollabs.com",
+    "url": "http://www.algollabs.com"
+  },
+  "licenses": [],
+  "keywords": [ "gerrit", "jenkins", "instructure" ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/amireh/jenking"
+  },
+  "bugs": {
+    "url": "https://github.com/amireh/jenking/issues"
+  },
+  "main": "www/dist/jenking.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "private": true,
+  "devDependencies": {
+    "glob": "x",
+    "grunt": "~0.4.1",
+    "grunt-bumpup": "0.2.x",
+    "grunt-connect-rewrite": "x",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-connect": "0.7.x",
+    "grunt-contrib-jshint": "~0.6.1",
+    "grunt-contrib-less": "~0.11.x",
+    "grunt-contrib-requirejs": "x",
+    "grunt-contrib-symlink": "^0.3.0",
+    "grunt-contrib-watch": "0.5.x",
+    "grunt-react": "x",
+    "grunt-string-replace": "0.2.x",
+    "grunt-tagrelease": "0.1.x",
+    "jshint-stylish-ex": "^0.2.0",
+    "less": "1.7.x",
+    "react-tools": "x",
+    "shelljs": "~0.1.2"
+  },
+  "dependencies": {}
+}

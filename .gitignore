@@ -1,0 +1,5 @@
+/www/dist/*
+/node_modules
+/tmp/*
+/www/src
+/www/vendor

@@ -3,7 +3,6 @@ define(function(require) {
   var React = require('react');
   var ajax = require('ajax');
   var updateProps = require('update_props');
-  var extend = require('util/extend');
   var findBy = require('util/find_by');
 
   var PatchTree = React.createClass({
@@ -20,7 +19,7 @@ define(function(require) {
       };
     },
 
-    componentDidUpdate: function(prevProps, prevState) {
+    componentDidUpdate: function(prevProps) {
       if (!prevProps.connected && this.props.connected) {
         this.load();
       }
@@ -66,7 +65,7 @@ define(function(require) {
       );
     },
 
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps: function() {
       this.setState({ loading: false });
     },
 
