@@ -46,6 +46,6 @@
     "grunt": "~0.4.1",
     "grunt-contrib-connect": "0.7.x",
     "grunt-connect-proxy": "^0.1.10",
-    "jenkingd": "git://github.com/amireh/jenkingd.git"
+    "jenkingd": "x"
   }
 }
