@@ -1,11 +1,216 @@
-#inspector {
-  position: fixed;
-  right: 0;
-  top: 0;
-  bottom: 0;
+@bg: #000;
+@fg: #c0c0c0;
+@hover-bg: inherit;
+@hover-fg: #00ff00;
+@active-bg: @hover-bg;
+@active-fg: @hover-fg;
+@spacing: 10px;
+@inspector-width: 50%;
+@status-height: 60px;
+@border-bg: @fg;
 
-  pre.console {
-    max-height: 320px;
+body {
+  font-size: 12.5px;
+  font-family: Monospace, monospace, courier;
+  color: @fg;
+  background: @bg;
+  padding: 0;
+  margin: 0;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+a {
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: #008080;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.active, &:focus {
+    color: #00ffff;
+  }
+
+  &.active {
+    font-weight: bold;
+  }
+}
+
+button {
+  border: 2px inset #808080;
+  padding: 10px;
+  background: #000080;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover, &:focus {
+    background: #0000ff;
+  }
+
+  &:active {
+    border-style: ridge;
+  }
+
+  &.a11y-btn {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: inherit;
+    height: auto;
+    line-height: inherit;
+    padding: 0;
+    margin: 0;
+
+    &:hover {
+      color: @hover-fg;
+      cursor: pointer;
+    }
+  }
+}
+
+.a11y-btn:focus, .a11y-btn.active, .active .a11y-btn {
+  color: @active-fg;
+  outline: none;
+}
+
+:disabled, [disabled] {
+  pointer-events: none;
+  cursor: default;
+}
+
+#jenking {
+  // width: 640px;
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  #content {
+    position: absolute;
+    top: 0;
+    right: @inspector-width;
+    bottom: @status-height;
+    left: 0;
+    padding: 0 @spacing;
+  }
+
+  #inspector {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
     overflow: auto;
+    padding: 0 @spacing;
+    width: @inspector-width;
+    border-left: 5px solid @border-bg;
+  }
+
+  #status {
+    position: absolute;
+    top: auto;
+    right: @inspector-width;
+    bottom: 0;
+    left: 0;
+    height: @status-height;
+    padding: @spacing;
+    background: #008000;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 5px;
+    vertical-align: top;
+  }
+
+  #patchTree {
+    min-width: 35%;
+
+    .patch {
+      &:hover, &.active {
+        cursor: pointer;
+
+        .a11y-btn {
+          color: @hover-fg;
+        }
+      }
+    }
+  }
+
+  // Job listing status
+  p.jobListing {
+    margin: 0;
+  }
+
+  .jobListing {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 24px;
+
+    // Job status indicator
+    li > span:first-child {
+      font-size: 16px;
+      vertical-align: middle;
+      width: 27px;
+      display: inline-block;
+    }
+
+    .active a {
+      font-weight: bold;
+    }
+  }
+}
+
+
+::-webkit-scrollbar {
+  width:  15px;
+  height: 15px;
+}
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment  {
+  height: 0px;
+  width: 0;
+  display: block;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track-piece  {
+  background-color: @border-bg;
+  -webkit-border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  height: 30px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  width: 20px;
+}
+
+::-webkit-scrollbar-thumb:vertical,
+::-webkit-scrollbar-thumb:horizontal {
+  background-color: #808080;
+  border: 3px solid @border-bg;
+
+  -webkit-border-radius: 0;
+
+  &:hover {
+    background-color: #ffffff;
   }
 }

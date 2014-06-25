@@ -4,25 +4,23 @@ define(function(require) {
   var ajax = require('ajax');
   var updateProps = require('update_props');
   var findBy = require('util/find_by');
+  var Checkmark = require('jsx!./components/checkmark');
+  var Cross = require('jsx!./components/cross');
 
   var PatchTree = React.createClass({
     getInitialState: function() {
       return {
-        loading: false
+        activeJobId: null
       };
     },
 
     getDefaultProps: function() {
       return {
         connected: false,
-        patches: []
+        patches: [],
+        activePatchId: null,
+        jobs: []
       };
-    },
-
-    componentDidUpdate: function(prevProps) {
-      if (!prevProps.connected && this.props.connected) {
-        this.load();
-      }
     },
 
     render: function() {
@@ -34,10 +32,6 @@ define(function(require) {
               <p>No patches available.</p>
           }
 
-          <button
-            disabled={!this.props.connected || this.state.loading}
-            onClick={this.load}
-            children={this.state.loading ? 'Loading...' : 'Reload'} />
         </div>
       );
     },
@@ -47,16 +41,15 @@ define(function(require) {
         <table>
           <thead>
             <tr>
-              <th>Verified</th>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Jenkins</th>
-              <th>CR</th>
-              <th>QA</th>
+              <th>V</th>
+              <th>Patch</th>
+              <th>J</th>
+              <th>C</th>
+              <th>Q</th>
             </tr>
           </thead>
 
-          <tbody onClick={this.inspectPatch}>
+          <tbody>
             {
               this.props.patches.map(this.renderPatch)
             }
@@ -65,50 +58,144 @@ define(function(require) {
       );
     },
 
-    componentWillReceiveProps: function() {
-      this.setState({ loading: false });
-    },
-
     renderPatch: function(patch) {
+      var isActive = patch.id === this.props.activePatchId;
       var record = patch.submitRecords[0].labels;
       var crRecord = findBy(record, 'label', 'Code-Review') || {};
       var qaRecord = findBy(record, 'label', 'QA-Review') || {};
       var jenkinsRecord = findBy(record, 'label', 'Verified') || {};
+      var renderStatus = function(status) {
+        if (status === 'REJECT') {
+          return <Cross />;
+        }
+        else if (status === 'OK') {
+          return <Checkmark />;
+        }
+        else {
+          return <span />
+        }
+      };
+
+      var className = React.addons.classSet({
+        'patch': true,
+        'active': isActive
+      });
 
       return(
-        <tr
-          key={'patch-' + patch.id}
-          onClick={this.activate.bind(null, patch.id)}>
-          <td>{patch.mergeable}</td>
-          <td>{patch.id}</td>
-          <td>{patch.subject}</td>
-          <td>{jenkinsRecord.status}</td>
-          <td>{crRecord.status}</td>
-          <td>{qaRecord.status}</td>
-        </tr>
+        [
+          <tr
+            key={'patch-' + patch.id}
+            className={className}
+            onClick={!isActive && this.inspectPatch.bind(null, patch.id)}>
+            <td>{patch.mergeable ? <Checkmark /> : <Cross />}</td>
+            <td><button className="a11y-btn">{patch.subject}</button></td>
+            <td>{renderStatus(jenkinsRecord.status)}</td>
+            <td>{renderStatus(crRecord.status)}</td>
+            <td>{renderStatus(qaRecord.status)}</td>
+          </tr>,
+          isActive &&
+            <tr>
+              <td />
+              <td colSpan={4}>{this.renderJobs()}</td>
+            </tr>
+        ]
       );
     },
 
-    load: function(e) {
-      if (e) {
-        e.preventDefault();
-      }
+    inspectPatch: function(patchId) {
+      if (patchId !== this.props.activePatchId) {
+        var jobs = [];
+        var patch = findBy(this.props.patches, 'id', patchId);
+        var loaded = 0;
 
-      if (this.props.connected) {
-        this.setState({
-          loading: true
+        updateProps({
+          activePatchId: patchId,
+          jobs: [],
+          jobsLoading: true,
+          log: undefined
         });
 
-        ajax('GET', '/patches').then(function(patches) {
-          updateProps({ patches: patches });
-        }, function(error) {
-          updateProps({ error: error });
+        patch.links.forEach(function(link) {
+          ajax('GET', '/job?link=' + link).then(function(job) {
+            var props = {};
+
+            jobs.push(job);
+
+            props.jobs = jobs;
+
+            if (++loaded === patch.links.length) {
+              props.jobsLoading = false;
+            }
+
+            updateProps(props);
+          }, function(error) {
+            if (++loaded === patch.links.length) {
+              updateProps({ jobsLoading: false });
+            }
+
+            console.debug('Job loading failed:', error);
+          });
+
         });
       }
     },
 
-    activate: function(patchId) {
-      updateProps({ activePatchId: patchId });
+    renderJobs: function() {
+      if (this.props.jobsLoading) {
+        return <p className="jobListing">Loading jobs...</p>;
+      }
+      else if (!this.props.jobs.length) {
+        return (<p className="jobListing">
+          Jobs unavailable. Perhaps this is a stale patch?
+        </p>);
+      }
+      else {
+        return (
+          <ul className="jobListing">
+            {
+              this.props.jobs.map(this.renderJob)
+            }
+          </ul>
+        );
+      }
+    },
+
+    renderJob: function(job) {
+      var className = this.state.activeJobId === job.id ? 'active' : null;
+
+      return (
+        <li key={'job-' + job.id}>
+          {job.status === 'SUCCESS' ? <Checkmark /> : <Cross />}
+
+          <a
+            className={className}
+            href={job.url}
+            onClick={this.inspectJob.bind(null, job)}
+            children={job.label} />
+        </li>
+      );
+    },
+
+    inspectJob: function(job, e) {
+      e.preventDefault();
+
+      if (job.id === this.state.activeJobId) {
+        // noop
+        return;
+      }
+
+      this.setState({
+        activeJobId: job.id
+      });
+
+      updateProps({ log: undefined, logLoading: true });
+
+      ajax('GET', '/job/log?link=' + job.url).then(function(log) {
+        updateProps({
+          log: log,
+          logLoading: false
+        });
+      });
     }
   });
 

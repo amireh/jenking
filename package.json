@@ -9,7 +9,11 @@
     "url": "http://www.algollabs.com"
   },
   "licenses": [],
-  "keywords": [ "gerrit", "jenkins", "instructure" ],
+  "keywords": [
+    "gerrit",
+    "jenkins",
+    "instructure"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/amireh/jenking"
@@ -26,6 +30,7 @@
     "glob": "x",
     "grunt": "~0.4.1",
     "grunt-bumpup": "0.2.x",
+    "grunt-connect-proxy": "^0.1.10",
     "grunt-connect-rewrite": "x",
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-connect": "0.7.x",

@@ -38,6 +38,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-react');
   grunt.loadNpmTasks('grunt-contrib-symlink');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-connect-proxy');
 
   grunt.registerTask('compile:js', [
     'symlink:compiled',
@@ -59,7 +60,7 @@ module.exports = function(grunt) {
     'compile:css'
   ]);
 
-  grunt.registerTask('default', [ 'connect' ]);
+  grunt.registerTask('default', [ 'configureProxies:www', 'connect:www' ]);
   grunt.registerTask('version', [ 'string-replace:version' ]);
 
   // Release alias task
