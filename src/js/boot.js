@@ -5,4 +5,6 @@ define(function(require) {
   var AppView = require('jsx!views/app');
 
   GLOBAL.App = React.renderComponent(AppView(), document.body);
+
+  return GLOBAL.App;
 });

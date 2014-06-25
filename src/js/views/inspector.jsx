@@ -1,10 +1,6 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
-  var ajax = require('ajax');
-  var updateProps = require('update_props');
-  var Checkmark = require('jsx!./components/checkmark');
-  var Cross = require('jsx!./components/cross');
 
   /**
    * @class Inspector
@@ -16,7 +12,8 @@ define(function(require) {
       return {
         patch: undefined,
         log: {},
-        loading: false
+        isLoadingLog: false,
+        connected: false
       };
     },
 
@@ -27,10 +24,12 @@ define(function(require) {
         <div id="inspector">
           {patch ?
             this.renderPatch(patch) :
-            <p>Choose a patch to inspect.</p>
+            this.props.connected ?
+              <p>Choose a patch to inspect.</p> :
+              false
           }
 
-          {this.props.loading && <p>Loading job console output...</p>}
+          {this.props.isLoadingLog && <p>Loading job console output...</p>}
         </div>
       );
     },
@@ -40,6 +39,10 @@ define(function(require) {
       return (
         <div>
           <h2>{patch.subject}</h2>
+
+          {!this.props.log.log && !this.props.isLoadingLog &&
+            <p>Choose a Jenkins job to inspect.</p>
+          }
 
           <pre
             className="console"

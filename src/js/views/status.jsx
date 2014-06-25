@@ -1,28 +1,18 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
-  var ajax = require('ajax');
-  var findBy = require('util/find_by');
-  var updateProps = require('update_props');
   var Actions = require('actions');
 
   var Status = React.createClass({
-    propTypes: {
-      connected: React.PropTypes.bool
-    },
-
-    getInitialState: function() {
-      return {
-        loading: false
-      };
-    },
-
     getDefaultProps: function() {
       return {
         connected: false,
-        jobs: [],
-        activeJobId: undefined,
-        isRetriggering: false
+        /** Errors get displayed in a nice bar, JSON.stringify() style */
+        error: undefined,
+        /** Job is needed for retriggering */
+        job: {},
+        isRetriggering: false,
+        isLoadingPatches: false
       };
     },
 
@@ -47,9 +37,9 @@ define(function(require) {
 
           {this.props.connected &&
             <button
-              disabled={this.props.patchesLoading}
+              disabled={this.props.isLoadingPatches}
               onClick={this.load}
-              children={this.props.patchesLoading ? 'Loading...' : 'Reload'} />
+              children={this.props.isLoadingPatches ? 'Loading...' : 'Reload'} />
           }
 
           {this.props.connected &&

@@ -1,3 +1,4 @@
+/* global App: false */
 define(function(require) {
   var ajax = require('ajax');
   var updateProps = require('update_props');
@@ -24,20 +25,49 @@ define(function(require) {
     disconnect: function() {
       ajax('GET', '/disconnect').then(function() {
         updateProps({}, true);
-      })
+      });
     },
 
     loadPatches: function() {
-      updateProps({ patchesLoading: true });
+      updateProps({ isLoadingPatches: true });
 
       ajax('GET', '/patches').then(function(patches) {
         updateProps({
           patches: patches,
-          patchesLoading: false,
+          isLoadingPatches: false,
           error: undefined
         });
       }, function(error) {
-        updateProps({ error: error, patchesLoading: false });
+        updateProps({ error: error, isLoadingPatches: false });
+      });
+    },
+
+    loadJobs: function(links) {
+      var jobs = [];
+      var loaded = 0;
+      var linkCount = links.length;
+      var isDone = function() {
+        return linkCount === loaded;
+      };
+
+      updateProps({
+        isLoadingJobs: linkCount > 0,
+        jobs: [],
+        log: undefined // reset any loaded log
+      });
+
+      links.forEach(function(link) {
+        ajax('GET', '/job?link=' + link).then(function(job) {
+          jobs.push(job);
+
+          ++loaded;
+
+          updateProps({ jobs: jobs, isLoadingJobs: !isDone() });
+        }, function() {
+          ++loaded;
+
+          updateProps({ isLoadingJobs: !isDone() });
+        });
       });
     },
 

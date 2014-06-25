@@ -9,6 +9,10 @@ define(function(require) {
   var PatchTree = require('jsx!./patch_tree');
   var Inspector = require('jsx!./inspector');
 
+  var getActivePatch = function(props) {
+    return findBy(props.patches, 'id', props.activePatchId);
+  };
+
   var App = React.createClass({
     componentDidMount: function() {
       ajax('GET', '/status').then(function(status) {
@@ -18,10 +22,30 @@ define(function(require) {
       }.bind(this));
     },
 
-    componentDidUpdate: function(prevProps, prevState) {
+    componentDidUpdate: function(prevProps) {
       if (!prevProps.connected && this.props.connected) {
         Actions.loadPatches();
       }
+
+      if (prevProps.activePatchId !== this.props.activePatchId) {
+        if (this.props.activePatchId) {
+          Actions.loadJobs(getActivePatch(this.props).links);
+        }
+      }
+    },
+
+    propTypes: {
+      activePatchId: React.PropTypes.string,
+      activeJobId: React.PropTypes.string,
+
+      connected: React.PropTypes.bool,
+      error: React.PropTypes.object,
+      patches: React.PropTypes.array,
+      jobs: React.PropTypes.array,
+
+      log: React.PropTypes.shape({
+        log: React.PropTypes.string
+      })
     },
 
     getDefaultProps: function() {
@@ -30,21 +54,21 @@ define(function(require) {
         activeJobId: undefined,
 
         connected: false,
-        status: 'idle',
         error: undefined,
         patches: [],
         jobs: [],
-        jobsLoading: false,
         log: undefined,
-        logLoading: false,
 
-        isRetriggering: false,
         isConnecting: false,
+        isLoadingPatches: false,
+        isLoadingJobs: false,
+        isLoadingLog: false,
+        isRetriggering: false,
       };
     },
 
     render: function() {
-      var activePatch = findBy(this.props.patches, 'id', this.props.activePatchId);
+      var activePatch = getActivePatch(this.props);
       var activeJob = findBy(this.props.jobs, 'id', this.props.activeJobId);
 
       return (
@@ -62,7 +86,7 @@ define(function(require) {
               patches={this.props.patches}
               activePatchId={this.props.activePatchId}
               jobs={this.props.jobs}
-              jobsLoading={this.props.jobsLoading}
+              isLoadingJobs={this.props.isLoadingJobs}
               activeJobId={this.props.activeJobId} />
             }
           </main>
@@ -71,13 +95,14 @@ define(function(require) {
             key="inspector"
             patch={activePatch}
             log={this.props.log}
-            loading={this.props.logLoading} />
+            isLoadingLog={this.props.isLoadingLog}
+            connected={this.props.connected} />
 
           <Status
             key="status"
             error={this.props.error}
             connected={this.props.connected}
-            patchesLoading={this.props.patchesLoading}
+            isLoadingPatches={this.props.isLoadingPatches}
             job={activeJob}
             isRetriggering={this.props.isRetriggering} />
         </div>
