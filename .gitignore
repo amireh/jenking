@@ -1,4 +1,3 @@
-/www/dist/*
 /node_modules
 /tmp/*
 /www/src
