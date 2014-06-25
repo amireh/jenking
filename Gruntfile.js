@@ -74,7 +74,7 @@ module.exports = function(grunt) {
     grunt.task.run('version');
     grunt.task.run('build');
     grunt.task.run('tagrelease');
-    grunt.task.run('development');
+    // grunt.task.run('development');
   });
 
   grunt.registerTask('development', function() {
