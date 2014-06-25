@@ -69,7 +69,6 @@ module.exports = function(grunt) {
 
   // Release alias task
   grunt.registerTask('release', function (type) {
-    grunt.task.run('test');
     grunt.task.run('bumpup:' + ( type || 'patch' ));
     grunt.task.run('updatePkg');
     grunt.task.run('version');
