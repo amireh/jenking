@@ -258,3 +258,14 @@ form {
     margin: @spacing 0;
   }
 }
+
+@keyframes          pulsate { 0% { opacity: 1; } 100% { opacity: 0.25; } }
+@-webkit-keyframes  pulsate { 0% { opacity: 1; } 100% { opacity: 0.25; } }
+@-moz-keyframes     pulsate { 0% { opacity: 1; } 100% { opacity: 0.25; } }
+
+.loading {
+  color: #ffff00;
+  -webkit-animation:  pulsate 650ms ease-in-out 0s infinite alternate;
+  -moz-animation:     pulsate 650ms ease-in-out 0s infinite alternate;
+  animation:          pulsate 650ms ease-in-out 0s infinite alternate;
+}

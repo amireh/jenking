@@ -13,8 +13,7 @@ define(function(require) {
 
     getInitialState: function() {
       return {
-        loading: false,
-        retriggering: false
+        loading: false
       };
     },
 
@@ -22,13 +21,14 @@ define(function(require) {
       return {
         connected: false,
         jobs: [],
-        activeJobId: undefined
+        activeJobId: undefined,
+        isRetriggering: false
       };
     },
 
     render: function() {
       var job = this.props.job;
-      var canRetrigger = job && !job.success && !job.active && !this.state.retriggering;
+      var canRetrigger = job && !job.success && !job.active && !this.props.isRetriggering;
 
       return(
         <footer id="status">
@@ -38,19 +38,22 @@ define(function(require) {
             </div>
           }
 
-          <button
-            disabled={!canRetrigger}
-            onClick={this.retrigger}
-            children="Retrigger" />
+          {canRetrigger &&
+            <button
+              onClick={this.retrigger}
+              children={this.props.isRetriggering ? 'Retriggering...' : 'Retrigger'}
+              />
+          }
 
-          <button
-            disabled={!this.props.connected || this.props.patchesLoading}
-            onClick={this.load}
-            children={this.props.patchesLoading ? 'Loading...' : 'Reload'} />
+          {this.props.connected &&
+            <button
+              disabled={this.props.patchesLoading}
+              onClick={this.load}
+              children={this.props.patchesLoading ? 'Loading...' : 'Reload'} />
+          }
 
-          {this.props.connected ?
-            <button onClick={this.disconnect} children="Disconnect" /> :
-            <button onClick={this.connect} children="Connect" />
+          {this.props.connected &&
+            <button onClick={this.disconnect} children="Disconnect" />
           }
         </footer>
       );
@@ -64,14 +67,16 @@ define(function(require) {
       Actions.loadPatches();
     },
 
+    retrigger: function(e) {
+      e.preventDefault();
+
+      Actions.retrigger(this.props.job.url);
+    },
+
     disconnect: function(e) {
       e.preventDefault();
 
-      ajax('GET', '/disconnect').then(function() {
-        updateProps({
-          connected: false
-        });
-      });
+      Actions.disconnect();
     },
   });
 

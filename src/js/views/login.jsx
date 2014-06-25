@@ -4,9 +4,15 @@ define(function(require) {
   var Actions = require('actions');
 
   var Login = React.createClass({
+    getDefaultProps: function() {
+      return {
+        isConnecting: false
+      };
+    },
+
     render: function() {
       return(
-        <form onSubmit={this.login}>
+        <form onSubmit={this.connect}>
           <label>
             Username: <input type="text" ref="username" />
           </label>
@@ -15,12 +21,18 @@ define(function(require) {
             Password: <input type="password" ref="password" />
           </label>
 
-          <input className="btn" type="submit" value="Login to Gerrit" />
+          <input
+            disabled={this.props.isConnecting}
+            className="btn"
+            type="submit"
+            value={this.props.isConnecting ?
+              "Connecting..." :
+              "Connect to JENKING"} />
         </form>
       );
     },
 
-    login: function(e) {
+    connect: function(e) {
       e.preventDefault();
 
       Actions.connect(

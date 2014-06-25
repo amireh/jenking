@@ -157,10 +157,17 @@ define(function(require) {
 
     renderJob: function(job) {
       var className = this.props.activeJobId === job.id ? 'active' : null;
+      var statusIndicator;
+      if (job.active) {
+        statusIndicator = <span className="loading">☀</span>;
+      }
+      else {
+        statusIndicator = job.status === 'SUCCESS' ? <Checkmark /> : <Cross />;
+      }
 
       return (
         <li key={'job-' + job.id}>
-          {job.status === 'SUCCESS' ? <Checkmark /> : <Cross />}
+          {statusIndicator}
 
           <a
             className={className}

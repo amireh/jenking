@@ -38,7 +38,8 @@ define(function(require) {
         log: undefined,
         logLoading: false,
 
-        jobRetriggering: false
+        isRetriggering: false,
+        isConnecting: false,
       };
     },
 
@@ -51,15 +52,19 @@ define(function(require) {
           <main id="content">
             <h1 key="heading">JENKING</h1>
 
-            {!this.props.connected && <Login key="login" />}
+            {!this.props.connected && <Login
+              key="login"
+              isConnecting={this.props.isConnecting} />
+            }
 
-            <PatchTree
+            {this.props.connected && <PatchTree
               key="patch-tree"
               patches={this.props.patches}
               activePatchId={this.props.activePatchId}
               jobs={this.props.jobs}
               jobsLoading={this.props.jobsLoading}
               activeJobId={this.props.activeJobId} />
+            }
           </main>
 
           <Inspector
@@ -74,7 +79,7 @@ define(function(require) {
             connected={this.props.connected}
             patchesLoading={this.props.patchesLoading}
             job={activeJob}
-            jobRetriggering={this.props.jobRetriggering} />
+            isRetriggering={this.props.isRetriggering} />
         </div>
       );
     }
