@@ -1,5 +1,5 @@
 {
-  "name": "JENKING",
+  "name": "jenking",
   "description": "Monitor and manage Jenkins jobs triggered by Gerrit.",
   "version": "1.0.0",
   "homepage": "https://github.com/amireh/jenking",
@@ -23,9 +23,9 @@
   },
   "main": "www/dist/jenking.js",
   "scripts": {
+    "start": "grunt",
     "test": "grunt test"
   },
-  "private": true,
   "devDependencies": {
     "glob": "x",
     "grunt": "~0.4.1",
