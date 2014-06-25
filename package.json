@@ -47,5 +47,7 @@
     "react-tools": "x",
     "shelljs": "~0.1.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jenkingd": "git://github.com/amireh/jenkingd.git"
+  }
 }

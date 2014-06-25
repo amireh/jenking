@@ -2,7 +2,7 @@ module.exports = {
   www: {
     proxies: [{
       context: '/api',
-      host: '127.0.0.1',
+      host: 'localhost',
       port: 8777,
       https: false,
       changeOrigin: false,
@@ -16,7 +16,7 @@ module.exports = {
       port: 8000,
       base: 'www',
       logger: 'dev',
-      hostname: '127.0.0.1',
+      hostname: '0.0.0.0',
       middleware: function (connect, options) {
         var proxy = require('grunt-connect-proxy/lib/utils').proxyRequest;
         var middlewares = [ proxy ];

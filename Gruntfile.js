@@ -2,7 +2,9 @@ module.exports = function(grunt) {
   'use strict';
 
   var shell = require('shelljs');
+  var exec = require('child_process').exec;
   var config;
+  var jenkingd;
 
   function readPackage() {
     return grunt.file.readJSON('package.json');
@@ -60,8 +62,10 @@ module.exports = function(grunt) {
     'compile:css'
   ]);
 
-  grunt.registerTask('default', [ 'configureProxies:www', 'connect:www' ]);
   grunt.registerTask('version', [ 'string-replace:version' ]);
+  grunt.registerTask('default', [
+    'spawn-jenkingd', 'configureProxies:www', 'connect:www'
+  ]);
 
   // Release alias task
   grunt.registerTask('release', function (type) {
@@ -81,5 +85,23 @@ module.exports = function(grunt) {
     shell.exec('cd www/; ln -s ../vendor ./');
 
     grunt.task.run('compile:css');
+  });
+
+  grunt.registerTask('spawn-jenkingd', function() {
+    jenkingd && jenkingd.kill();
+
+    jenkingd = exec('npm start jenkingd', function (err, stdout, stderr) {
+      grunt.log.write(stdout);
+      grunt.log.error(stderr);
+
+      if (err !== null) {
+        grunt.log.error('exec error: ', err);
+      }
+    });
+
+    process.on('exit', function() {
+      grunt.log.writeln('killing jenkingd...');
+      jenkingd.kill();
+    });
   });
 };
