@@ -1,6 +1,6 @@
 define(function() {
-  // var JENKINGD_URL = 'http://192.168.1.101:8777';
   var JENKINGD_URL = '/api';
+  var authToken;
   var ajax = function(method, url, data) {
     var xhr;
     var onError = [];
@@ -47,9 +47,18 @@ define(function() {
 
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+    if (authToken) {
+      xhr.setRequestHeader('Authorization', authToken);
+    }
+
     xhr.send(data ? JSON.stringify(data) : undefined);
 
     return promise;
+  };
+
+  ajax.authenticate = function(username, password) {
+    authToken = 'Basic ' + btoa(username + ':' + password);
   };
 
   return ajax;

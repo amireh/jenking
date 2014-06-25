@@ -10,13 +10,11 @@ define(function(require) {
   var PatchTree = React.createClass({
     getInitialState: function() {
       return {
-        activeJobId: null
       };
     },
 
     getDefaultProps: function() {
       return {
-        connected: false,
         patches: [],
         activePatchId: null,
         jobs: []
@@ -111,7 +109,7 @@ define(function(require) {
         updateProps({
           activePatchId: patchId,
           jobs: [],
-          jobsLoading: true,
+          jobsLoading: patch.links.length > 0,
           log: undefined
         });
 
@@ -132,10 +130,7 @@ define(function(require) {
             if (++loaded === patch.links.length) {
               updateProps({ jobsLoading: false });
             }
-
-            console.debug('Job loading failed:', error);
           });
-
         });
       }
     },
@@ -146,7 +141,7 @@ define(function(require) {
       }
       else if (!this.props.jobs.length) {
         return (<p className="jobListing">
-          Jobs unavailable. Perhaps this is a stale patch?
+          Jobs unavailable. Perhaps this is a stale patch, or a very new one?
         </p>);
       }
       else {
@@ -161,7 +156,7 @@ define(function(require) {
     },
 
     renderJob: function(job) {
-      var className = this.state.activeJobId === job.id ? 'active' : null;
+      var className = this.props.activeJobId === job.id ? 'active' : null;
 
       return (
         <li key={'job-' + job.id}>
@@ -179,16 +174,16 @@ define(function(require) {
     inspectJob: function(job, e) {
       e.preventDefault();
 
-      if (job.id === this.state.activeJobId) {
+      if (job.id === this.props.activeJobId) {
         // noop
         return;
       }
 
-      this.setState({
+      updateProps({
+        log: undefined,
+        logLoading: true,
         activeJobId: job.id
       });
-
-      updateProps({ log: undefined, logLoading: true });
 
       ajax('GET', '/job/log?link=' + job.url).then(function(log) {
         updateProps({

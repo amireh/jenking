@@ -15,7 +15,6 @@ define(function(require) {
     getDefaultProps: function() {
       return {
         patch: undefined,
-        jobs: [],
         log: {},
         loading: false
       };

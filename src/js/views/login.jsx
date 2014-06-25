@@ -1,8 +1,7 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
-  var ajax = require('ajax');
-  var updateProps = require('update_props');
+  var Actions = require('actions');
 
   var Login = React.createClass({
     render: function() {
@@ -16,7 +15,7 @@ define(function(require) {
             Password: <input type="password" ref="password" />
           </label>
 
-          <input type="submit" value="Login to Gerrit" />
+          <input className="btn" type="submit" value="Login to Gerrit" />
         </form>
       );
     },
@@ -24,14 +23,9 @@ define(function(require) {
     login: function(e) {
       e.preventDefault();
 
-      ajax('POST', '/connect', {
-        username: this.refs.username.getDOMNode().value,
-        password: this.refs.password.getDOMNode().value
-      }).then(function() {
-        updateProps({ connected: true });
-      }, function(error) {
-        updateProps({ error: error });
-      });
+      Actions.connect(
+        this.refs.username.getDOMNode().value,
+        this.refs.password.getDOMNode().value);
     },
   });
 

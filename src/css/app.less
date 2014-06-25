@@ -18,6 +18,10 @@ body {
   margin: 0;
 }
 
+h1,h2,h3 {
+  margin: @spacing 0;
+}
+
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -43,7 +47,7 @@ a {
   }
 }
 
-button {
+button, .btn {
   border: 2px inset #808080;
   padding: 10px;
   background: #000080;
@@ -128,6 +132,15 @@ button {
     background: #008000;
   }
 
+  #errorBox {
+    position: absolute;
+    bottom: 100%;
+    background: #ff0000;
+    left: 0;
+    right: 0;
+    line-height: 20px;
+  }
+
   table {
     width: 100%;
   }
@@ -150,6 +163,12 @@ button {
         }
       }
     }
+
+    th, td {
+      &:not(:nth-of-type(2)) {
+        width: 28px;
+      }
+    }
   }
 
   // Job listing status
@@ -167,7 +186,7 @@ button {
     li > span:first-child {
       font-size: 16px;
       vertical-align: middle;
-      width: 27px;
+      width: 28px;
       display: inline-block;
     }
 
@@ -212,5 +231,30 @@ button {
 
   &:hover {
     background-color: #ffffff;
+  }
+}
+
+form {
+  label {
+    display: block;
+
+    span {
+      display: block;
+    }
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    line-height: 30px;
+    padding: @spacing / 2;
+    font-family: inherit;
+    border-style: inset;
+    color: inherit;
+    background: transparent;
+    margin: @spacing 0;
+  }
+
+  input[type="submit"] {
+    margin: @spacing 0;
   }
 }

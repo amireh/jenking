@@ -2,6 +2,7 @@
 define(function(require) {
   var React = require('react');
   var ajax = require('ajax');
+  var findBy = require('util/find_by');
   var updateProps = require('update_props');
   var Actions = require('actions');
 
@@ -12,16 +13,23 @@ define(function(require) {
 
     getInitialState: function() {
       return {
-        loading: false
+        loading: false,
+        retriggering: false
       };
     },
 
     getDefaultProps: function() {
       return {
-        connected: false
+        connected: false,
+        jobs: [],
+        activeJobId: undefined
       };
     },
+
     render: function() {
+      var job = this.props.job;
+      var canRetrigger = job && !job.success && !job.active && !this.state.retriggering;
+
       return(
         <footer id="status">
           {this.props.error &&
@@ -29,6 +37,11 @@ define(function(require) {
               {JSON.stringify(this.props.error)}
             </div>
           }
+
+          <button
+            disabled={!canRetrigger}
+            onClick={this.retrigger}
+            children="Retrigger" />
 
           <button
             disabled={!this.props.connected || this.props.patchesLoading}

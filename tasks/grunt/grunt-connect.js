@@ -2,7 +2,7 @@ module.exports = {
   www: {
     proxies: [{
       context: '/api',
-      host: 'localhost',
+      host: '127.0.0.1',
       port: 8777,
       https: false,
       changeOrigin: false,
