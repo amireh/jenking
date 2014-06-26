@@ -4,6 +4,7 @@ module.exports = function(grunt) {
   var shell = require('shelljs');
   var exec = require('child_process').exec;
   var spawn = require('child_process').spawn;
+  var path = require('path');
   var config;
   var jenkingd;
 
@@ -105,7 +106,9 @@ module.exports = function(grunt) {
       setTimeout(function() { process.exit(0); }, 100);
     };
 
+    process.env.PATH += ':' + path.join(__dirname, 'node_modules', 'jenkingd', 'bin');
     jenkingd = spawn('jenkingd', [], {
+      env: process.env,
       stdio: [ 'ignore', 'pipe', process.stderr ],
       killSignal: 'SIGINT'
     });
