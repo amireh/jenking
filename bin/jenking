@@ -1,27 +1,11 @@
 #!/usr/bin/env node
 
-var grunt;
 var path = require('path');
-var exec = require('child_process').exec;
-var cleanup = function() {
-  grunt.kill();
+var root = path.join(__dirname, '..');
 
-  setTimeout(function() {
-    process.exit(0);
-  }, 50);
-};
+// Use the jenking root as the CWD so that grunt can read the Gruntfile there:
+process.chdir(root);
+process.env.production = true;
 
-grunt = exec('grunt', {
-  cwd: path.join(__dirname, '..'),
-  env: process.env
-});
-
-grunt.stdout.on('data', function(data) {
-  process.stdout.write(data);
-});
-
-grunt.stderr.on('data', function(data) {
-  process.stderr.write(data);
-});
-
-process.on('SIGINT', cleanup).on('SIGTERM', cleanup);
+// Run the default grunt task:
+require(path.join(root, 'node_modules', 'grunt', 'lib', 'grunt')).tasks();
