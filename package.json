@@ -22,8 +22,11 @@
     "url": "https://github.com/amireh/jenking/issues"
   },
   "main": "www/dist/jenking.js",
+  "bin": {
+    "jenking": "./bin/jenking"
+  },
   "scripts": {
-    "start": "grunt"
+    "start": "./bin/jenking"
   },
   "devDependencies": {
     "grunt-bumpup": "0.2.x",
@@ -46,6 +49,6 @@
     "grunt": "~0.4.1",
     "grunt-contrib-connect": "0.7.x",
     "grunt-connect-proxy": "^0.1.10",
-    "jenkingd": "x"
+    "jenkingd": "^1.0.1"
   }
 }

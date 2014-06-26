@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
   var shell = require('shelljs');
   var exec = require('child_process').exec;
+  var spawn = require('child_process').spawn;
   var config;
   var jenkingd;
 
@@ -87,20 +88,37 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('spawn-jenkingd', function() {
-    jenkingd && jenkingd.kill();
+    var cleanedUp;
+    var cleanup = function() {
+      if (cleanedUp) {
+        return;
+      }
 
-    jenkingd = exec('npm start jenkingd', function (err, stdout, stderr) {
-      grunt.log.write(stdout);
-      grunt.log.error(stderr);
+      cleanedUp = true;
 
-      if (err !== null) {
-        grunt.log.error('exec error: ', err);
+      if (jenkingd) {
+        grunt.log.writeln('killing jenkingd...');
+        jenkingd.kill();
+      }
+
+      // give it some time to cleanup
+      setTimeout(function() { process.exit(0); }, 100);
+    };
+
+    jenkingd = spawn('jenkingd', [], {
+      stdio: [ 'ignore', 'pipe', process.stderr ],
+      killSignal: 'SIGINT'
+    });
+
+    jenkingd.stdout.on('data', function(message) {
+      if (/unable to bind/.test(message)) {
+        grunt.fatal(''+message);
+      }
+      else {
+        grunt.log.write(message);
       }
     });
 
-    process.on('exit', function() {
-      grunt.log.writeln('killing jenkingd...');
-      jenkingd.kill();
-    });
+    process.on('exit', cleanup).on('SIGTERM', cleanup).on('SIGINT', cleanup);
   });
 };
