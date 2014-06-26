@@ -2,11 +2,11 @@
 
 Would you rather spend your time doing this:
 
-    1. going through each failing gerrit patch page
-    2. visiting their failed Jenkins job pages
-    3. clicking the Console tab
-    4. taking a brief glance at what's gone bad, betting nine out of ten that it's just a Jenkins act
-    5. pushing the retrigger button in case it is
+1. going through each failing gerrit patch page
+2. visiting their failed Jenkins job pages
+3. clicking the Console tab
+4. taking a brief glance at what's gone bad, betting nine out of ten that it's just a Jenkins act
+5. pushing the retrigger button in case it is
 
 Or, say, sit on a couch instead?
 
@@ -20,10 +20,10 @@ Optionally, JENKING can try to act smart by giving you an estimate of how likely
 
 Accommodating our commitment to laziness, getting JENKING up takes 34 keystrokes:
 
-    ```bash
-    npm install -g jenking
-    jenking
-    ```
+```bash
+npm install -g jenking
+jenking
+```
 
 If you need `sudo` to do that first one, I'm sorry.
 
