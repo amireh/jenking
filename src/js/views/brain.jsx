@@ -12,6 +12,8 @@ define(function(require) {
           connected: status.connected
         });
       });
+
+      this.autoRetrigger = setInterval(this.retrigger, 5 * 60)
     },
 
     componentDidUpdate: function(prevProps) {
@@ -41,6 +43,10 @@ define(function(require) {
 
     render: function() {
       return <div />;
+    },
+
+    retrigger: function() {
+
     }
   });
 

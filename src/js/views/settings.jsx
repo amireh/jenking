@@ -7,19 +7,28 @@ define(function(require) {
     getDefaultProps: function() {
       return {
         preferences: {
-          retriggerAborted: false
         }
       };
     },
 
     render: function() {
-      console.log('Settings rendering:', this.props.preferences);
-
       return(
         <form onSubmit={this.save} className="eb-dialog" id="settings">
           <header>
             <span>Settings</span>
           </header>
+
+          <label>
+            <span className="block">
+              Query to use for retrieving patches from Gerrit
+            </span>
+
+            <input
+              onChange={this.updateQuery}
+              value={this.props.preferences.query}
+              type="text"
+              />
+          </label>
 
           <label>
             <input
@@ -36,10 +45,12 @@ define(function(require) {
       );
     },
 
+    updateQuery: function(e) {
+      Actions.savePreferences({ query: e.target.value });
+    },
+
     toggleRetriggerAborted: function(e) {
-      Actions.savePreferences({
-        retriggerAborted: e.target.checked
-      });
+      Actions.savePreferences({ retriggerAborted: e.target.checked });
     },
 
     save: function(e) {

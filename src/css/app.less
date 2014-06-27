@@ -239,28 +239,29 @@ input[type="checkbox"] {
 }
 
 form#login {
-  label {
-    display: block;
-
-    span {
-      display: block;
-    }
-  }
-
-  input[type="text"],
-  input[type="password"] {
-    line-height: 30px;
-    padding: @spacing / 2;
-    font-family: inherit;
-    border-style: inset;
-    color: inherit;
-    background: transparent;
-    margin: @spacing 0;
-  }
 
   input[type="submit"] {
     margin: @spacing 0;
   }
+}
+
+label {
+  display: block;
+  margin-bottom: @spacing;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  display: block;
+  line-height: 30px;
+  padding: @spacing / 2;
+  font-family: inherit;
+  border-style: inset;
+  color: inherit;
+  background: transparent;
+  margin: @spacing 0;
+  width: 100%;
 }
 
 @keyframes          pulsate { 0% { opacity: 1; } 100% { opacity: 0.25; } }
@@ -301,6 +302,7 @@ form#login {
     margin: @spacing;
     border: 1px solid @border-bg;
     letter-spacing: 2px;
+    z-index: -1;
 
     span {
       display: block;

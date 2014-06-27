@@ -4,19 +4,23 @@ var seed = {
 };
 
 define(function(require) {
+  var app;
   var React = require('react');
   var AppView = require('jsx!views/app');
   var preferences = require('preferences');
-
-  var app = React.renderComponent(AppView(), document.body);
-  var injectPreferences = function(prefs) {
+  var injectPreferences = function() {
     app.setProps({ preferences: preferences.get() });
   };
 
+  app = React.renderComponent(AppView(), document.body);
   app.setProps(seed);
 
   preferences.onChange(injectPreferences);
   injectPreferences();
+
+  //>>excludeStart("production", pragmas.production);
+  require('debug');
+  //>>excludeEnd("production");
 
   GLOBAL.App = app;
   return app;

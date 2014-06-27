@@ -1,67 +1,54 @@
-define(function() {
+define(function(require) {
+  var RSVP = require('rsvp');
   var JENKINGD_URL = '/api';
   var authToken;
   var ajax = function(method, url, data) {
-    var xhr;
-    var onError = [];
-    var onSuccess = [];
+    return new RSVP.Promise(function(resolve, reject) {
+      var xhr;
 
-    var promise = {
-      then: function(success, error) {
-        if (success) {
-          onSuccess.push(success);
-        }
+      xhr = new XMLHttpRequest();
+      xhr.open(method, JENKINGD_URL + url, true);
+      xhr.onreadystatechange = function() {
+        var payload;
 
-        if (error) {
-          onError.push(error);
-        }
-      }
-    };
+        if (xhr.readyState === 4) {
+          try {
+            payload = JSON.parse(xhr.responseText);
+          } catch(e) {
+            console.warn(xhr.status, xhr.responseText);
 
-    xhr = new XMLHttpRequest();
-    xhr.open(method, JENKINGD_URL + url, true);
-    xhr.onreadystatechange = function() {
-      var payload;
-
-      if (xhr.readyState === 4) {
-        try {
-          payload = JSON.parse(xhr.responseText);
-        } catch(e) {
-          console.warn(xhr.status, xhr.responseText);
-
-          payload = {
-            message: 'unable to parse payload, see console'
-          };
-        }
-
-        if (xhr.status === 200) {
-          onSuccess.forEach(function(callback) {
-            callback(payload, xhr);
-          });
-        }
-        else {
-          if (xhr.status === 500 && xhr.responseText.match('"code":"ECONNREFUSED"')) {
             payload = {
-              message: 'jenkingd could not be reached'
+              message: 'unable to parse payload, see console'
             };
           }
-          onError.forEach(function(callback) {
-            callback(payload, xhr);
-          });
+
+          if (xhr.status === 200) {
+            resolve(payload);
+          }
+          else {
+            if (xhr.status === 500 && xhr.responseText.match('"code":"ECONNREFUSED"')) {
+              payload = {
+                message: 'jenkingd could not be reached'
+              };
+            }
+
+            reject({
+              error: payload,
+              xhr: xhr
+            }, 'ajax: [' + method + '] to "' + url + '"');
+          }
         }
+      };
+
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      if (authToken) {
+        xhr.setRequestHeader('Authorization', authToken);
       }
-    };
 
-    xhr.setRequestHeader('Accept', 'application/json');
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-
-    if (authToken) {
-      xhr.setRequestHeader('Authorization', authToken);
-    }
-
-    xhr.send(data ? JSON.stringify(data) : undefined);
-
-    return promise;
+      xhr.send(data ? JSON.stringify(data) : undefined);
+    });
   };
 
   ajax.authenticate = function(username, password) {

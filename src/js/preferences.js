@@ -1,6 +1,10 @@
 define(function(require) {
   var extend = require('util/extend');
   var onChange = [];
+  var defaults = {
+    query: 'status:open owner:self',
+    retriggerAborted: true
+  };
 
   var preferences = {
     save: function(prefs) {
@@ -18,7 +22,7 @@ define(function(require) {
     },
 
     get: function() {
-      return JSON.parse(localStorage.preferences || '{}');
+      return extend({}, defaults, JSON.parse(localStorage.preferences || '{}'));
     }
   };
 
