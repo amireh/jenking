@@ -3,8 +3,7 @@ define(function(require) {
   var React = require('react');
   var Actions = require('actions');
   var Settings = require('jsx!./settings');
-  var findBy = require('util/find_by');
-  var updateProps = require('update_props');
+  var Messages = require('jsx!./messages');
 
   var Status = React.createClass({
     getInitialState: function() {
@@ -23,18 +22,12 @@ define(function(require) {
         job: undefined,
         isRetriggering: false,
         isLoadingPatches: false,
+        isRetriggeringAbortedJobs: false,
         preferences: {}
       };
     },
 
     render: function() {
-      var job = this.props.job;
-      var canRetrigger = this.props.connected &&
-        job &&
-        !job.success &&
-        !job.active &&
-        !this.props.isRetriggering;
-
       return(
         <footer id="status">
           {this.state.showingSettings &&
@@ -43,33 +36,59 @@ define(function(require) {
               preferences={this.props.preferences} />
           }
 
-          {this.props.error &&
-            <div id="errorBox">
-              {JSON.stringify(this.props.error)}
-            </div>
-          }
-
-          {canRetrigger &&
-            <button
-              onClick={this.retrigger}
-              children={this.props.isRetriggering ? 'Retriggering...' : 'Retrigger'}
+          {(this.props.error || this.props.notification) &&
+            <Messages
+              error={this.props.error}
+              notification={this.props.notification}
               />
           }
 
-          {this.props.connected &&
-            <button
-              disabled={this.props.isLoadingPatches}
-              onClick={this.reload}
-              children={this.props.isLoadingPatches ? 'Loading...' : 'Reload'} />
-          }
-
-          {this.props.connected &&
-            <button onClick={this.disconnect} children="Disconnect" />
-          }
+          {this.props.connected && this.renderConnectedButtons()}
 
           <button onClick={this.showSettings} children="Settings" />
         </footer>
       );
+    },
+
+    renderConnectedButtons: function() {
+      var job = this.props.job;
+      var canRetrigger = job &&
+        !job.success &&
+        !job.active &&
+        !this.props.isRetriggering;
+
+      return [
+        canRetrigger &&
+          <button
+            key="retrigger"
+            onClick={this.retrigger}
+            children={this.props.isRetriggering ? 'Retriggering...' : 'Retrigger'}
+            />
+        ,
+        <button
+          key="reload"
+          disabled={this.props.isLoadingPatches}
+          onClick={this.reload}
+          children={this.props.isLoadingPatches ? 'Loading...' : 'Reload'}
+          />
+        ,
+
+        <button
+          key="retrigger-aborted"
+          disabled={this.isRetriggeringAbortedJobs}
+          onClick={this.retriggerAbortedJobs}
+          children={
+            this.isRetriggeringAbortedJobs ?
+              'Retriggering aborted...' :
+              'Retrigger Aborted'
+          }
+          />
+        ,
+        <button
+          key="disconnect"
+          onClick={this.disconnect}
+          children="Disconnect" />
+      ];
     },
 
     reload: function(e) {

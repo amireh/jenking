@@ -96,7 +96,7 @@ define(function(require) {
       });
     },
 
-    loadAbortedJobs: function(patches) {
+    retriggerAbortedJobs: function(patches) {
       var jobs = [];
       var services = patches.reduce(function(links, patch) {
         return links.concat(patch.links);
@@ -109,7 +109,33 @@ define(function(require) {
       });
 
       RSVP.all(services).finally(function() {
-        updateProps({ abortedJobs: jobs });
+        if (!jobs.length) {
+          updateProps({
+            notification: 'No aborted jobs were found.'
+          });
+
+          return;
+        }
+
+        updateProps({
+          abortedJobs: jobs,
+          isRetriggeringAbortedJobs: true
+        });
+
+        return RSVP.all(jobs.map(function(job) {
+          return ajax('GET', '/job/retrigger?link=' + job.url).then(function() {
+            jobs.splice(jobs.indexOf(job), 1);
+
+            updateProps({
+              abortedJobs: jobs
+            });
+          });
+        }));
+      }).finally(function() {
+        updateProps({
+          isRetriggeringAbortedJobs: false,
+          abortedJobs: undefined
+        });
       });
     },
 

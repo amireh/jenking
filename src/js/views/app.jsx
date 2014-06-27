@@ -19,6 +19,7 @@ define(function(require) {
 
       connected: React.PropTypes.bool,
       error: React.PropTypes.object,
+      notification: React.PropTypes.string,
       patches: React.PropTypes.array,
       jobs: React.PropTypes.array,
 
@@ -34,6 +35,7 @@ define(function(require) {
 
         connected: false,
         error: undefined,
+        notification: undefined,
         patches: [],
         jobs: [],
         log: undefined,
@@ -83,6 +85,7 @@ define(function(require) {
           <Status
             key="status"
             error={this.props.error}
+            notification={this.props.notification}
             connected={this.props.connected}
             isLoadingPatches={this.props.isLoadingPatches}
             patch={activePatch}
