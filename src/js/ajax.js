@@ -27,8 +27,10 @@ define(function() {
         try {
           payload = JSON.parse(xhr.responseText);
         } catch(e) {
+          console.warn(xhr.status, xhr.responseText);
+
           payload = {
-            message: 'unable to parse payload'
+            message: 'unable to parse payload, see console'
           };
         }
 
@@ -38,6 +40,11 @@ define(function() {
           });
         }
         else {
+          if (xhr.status === 500 && xhr.responseText.match('"code":"ECONNREFUSED"')) {
+            payload = {
+              message: 'jenkingd could not be reached'
+            };
+          }
           onError.forEach(function(callback) {
             callback(payload, xhr);
           });

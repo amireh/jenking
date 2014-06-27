@@ -2,9 +2,11 @@
 define(function(require) {
   var React = require('react');
   var updateProps = require('update_props');
+  var Actions = require('actions');
   var extend = require('util/extend');
   var Patch = require('jsx!./patch');
   var PatchJobs = require('jsx!./patch_jobs');
+  var findBy = require('util/find_by');
 
   var PatchTree = React.createClass({
     getInitialState: function() {

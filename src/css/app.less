@@ -8,9 +8,10 @@
 @inspector-width: 50%;
 @status-height: 60px;
 @border-bg: @fg;
+@blue: #000080;
 
 body {
-  font-size: 12.5px;
+  font-size: 12px;
   font-family: Monospace, monospace, courier;
   color: @fg;
   background: @bg;
@@ -233,7 +234,11 @@ button, .btn {
   }
 }
 
-form {
+input[type="checkbox"] {
+  vertical-align: middle;
+}
+
+form#login {
   label {
     display: block;
 
@@ -267,4 +272,52 @@ form {
   -webkit-animation:  pulsate 650ms ease-in-out 0s infinite alternate;
   -moz-animation:     pulsate 650ms ease-in-out 0s infinite alternate;
   animation:          pulsate 650ms ease-in-out 0s infinite alternate;
+}
+
+.eb-dialog {
+  @width: 480px;
+  @height: 320px;
+  @spacing: 15px;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: @width;
+  height: @height;
+  margin-top: -0.5 * @height;
+  margin-left: -0.5 * @width;
+  overflow: auto;
+
+  background: @blue;
+  padding: @spacing * 2;
+
+  header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    margin: @spacing;
+    border: 1px solid @border-bg;
+    letter-spacing: 2px;
+
+    span {
+      display: block;
+      text-align: center;
+      background: @blue;
+      margin-left: @spacing;
+      margin-right: @spacing;
+      margin-top: -0.5 * @spacing;
+    }
+  }
+
+  footer {
+    position: absolute;
+    right: @spacing;
+    bottom: @spacing;
+    left: @spacing;
+    padding: @spacing;
+    text-align: center;
+  }
 }

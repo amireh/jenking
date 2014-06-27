@@ -1,9 +1,8 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
-  var ajax = require('ajax');
-  var Actions = require('actions');
   var findBy = require('util/find_by');
+  var Brain = require('jsx!./brain');
   var Login = require('jsx!./login');
   var Status = require('jsx!./status');
   var PatchTree = require('jsx!./patch_tree');
@@ -14,26 +13,6 @@ define(function(require) {
   };
 
   var App = React.createClass({
-    componentDidMount: function() {
-      ajax('GET', '/status').then(function(status) {
-        this.setProps({
-          connected: status.connected
-        });
-      }.bind(this));
-    },
-
-    componentDidUpdate: function(prevProps) {
-      if (!prevProps.connected && this.props.connected) {
-        Actions.loadPatches();
-      }
-
-      if (prevProps.activePatchId !== this.props.activePatchId) {
-        if (this.props.activePatchId) {
-          Actions.loadJobs(getActivePatch(this.props).links);
-        }
-      }
-    },
-
     propTypes: {
       activePatchId: React.PropTypes.string,
       activeJobId: React.PropTypes.string,
@@ -71,8 +50,11 @@ define(function(require) {
       var activePatch = getActivePatch(this.props);
       var activeJob = findBy(this.props.jobs, 'id', this.props.activeJobId);
 
+
       return (
         <div id="jenking">
+          {this.transferPropsTo(Brain())}
+
           <main id="content">
             <h1 key="heading">JENKING</h1>
 
@@ -103,8 +85,11 @@ define(function(require) {
             error={this.props.error}
             connected={this.props.connected}
             isLoadingPatches={this.props.isLoadingPatches}
+            patch={activePatch}
             job={activeJob}
-            isRetriggering={this.props.isRetriggering} />
+            isRetriggering={this.props.isRetriggering}
+            preferences={this.props.preferences}
+            />
         </div>
       );
     }

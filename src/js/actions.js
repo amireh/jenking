@@ -3,6 +3,7 @@ define(function(require) {
   var ajax = require('ajax');
   var updateProps = require('update_props');
   var findBy = require('util/find_by');
+  var preferences = require('preferences');
 
   return {
     connect: function(username, password) {
@@ -53,6 +54,7 @@ define(function(require) {
       updateProps({
         isLoadingJobs: linkCount > 0,
         jobs: [],
+        activeJobId: null,
         log: undefined // reset any loaded log
       });
 
@@ -67,6 +69,20 @@ define(function(require) {
           ++loaded;
 
           updateProps({ isLoadingJobs: !isDone() });
+        });
+      });
+    },
+
+    loadJobLog: function(link) {
+      updateProps({
+        log: undefined,
+        isLoadingLog: true
+      });
+
+      ajax('GET', '/job/log?link=' + link).then(function(log) {
+        updateProps({
+          log: log,
+          isLoadingLog: false
         });
       });
     },
@@ -92,6 +108,10 @@ define(function(require) {
           isRetriggering: false
         });
       });
+    },
+
+    savePreferences: function(prefs) {
+      preferences.save(prefs);
     }
   };
 });

@@ -62,23 +62,11 @@ define(function(require) {
     inspectJob: function(jobId, jobUrl, e) {
       e.preventDefault();
 
-      if (jobId === this.props.activeJobId) {
-        // noop
-        return;
-      }
-
-      updateProps({
-        log: undefined,
-        isLoadingLog: true,
-        activeJobId: jobId
-      });
-
-      ajax('GET', '/job/log?link=' + jobUrl).then(function(log) {
+      if (jobId !== this.props.activeJobId) {
         updateProps({
-          log: log,
-          isLoadingLog: false
+          activeJobId: jobId
         });
-      });
+      }
     }
   });
 

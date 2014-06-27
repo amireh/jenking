@@ -12,7 +12,7 @@ define(function(require) {
 
     render: function() {
       return(
-        <form onSubmit={this.connect}>
+        <form id="login" onSubmit={this.connect}>
           <label>
             Username: <input type="text" ref="username" />
           </label>
