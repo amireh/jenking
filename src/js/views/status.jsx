@@ -10,7 +10,7 @@ define(function(require) {
         /** Errors get displayed in a nice bar, JSON.stringify() style */
         error: undefined,
         /** Job is needed for retriggering */
-        job: {},
+        job: undefined,
         isRetriggering: false,
         isLoadingPatches: false
       };
@@ -18,7 +18,11 @@ define(function(require) {
 
     render: function() {
       var job = this.props.job;
-      var canRetrigger = job && !job.success && !job.active && !this.props.isRetriggering;
+      var canRetrigger = this.props.connected &&
+        job &&
+        !job.success &&
+        !job.active &&
+        !this.props.isRetriggering;
 
       return(
         <footer id="status">

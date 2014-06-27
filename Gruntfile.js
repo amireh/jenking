@@ -35,9 +35,6 @@ module.exports = function(grunt) {
   grunt.registerTask('spawn-jenkingd',
     require('./tasks/spawn_jenkingd').bind(null, grunt));
 
-  grunt.registerTask('default', [
-    'spawn-jenkingd',
-    'configureProxies:www',
-    'connect:www'
-  ]);
+  grunt.registerTask('server', [ 'configureProxies:www', 'connect:www' ]);
+  grunt.registerTask('default', [ 'spawn-jenkingd', 'server' ]);
 };
