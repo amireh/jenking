@@ -89,6 +89,7 @@ define(function(require) {
             connected={this.props.connected}
             isLoadingPatches={this.props.isLoadingPatches}
             patch={activePatch}
+            patches={this.props.patches}
             job={activeJob}
             isRetriggering={this.props.isRetriggering}
             preferences={this.props.preferences}

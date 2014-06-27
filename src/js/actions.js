@@ -5,6 +5,9 @@ define(function(require) {
   var findBy = require('util/find_by');
   var preferences = require('preferences');
   var RSVP = require('rsvp');
+  var notify = function(message) {
+    updateProps({ notification: message });
+  };
 
   return {
     connect: function(username, password) {
@@ -98,7 +101,15 @@ define(function(require) {
 
     retriggerAbortedJobs: function(patches) {
       var jobs = [];
-      var services = patches.reduce(function(links, patch) {
+      var nrJobs;
+      var loads;
+
+      updateProps({
+        isRetriggeringAbortedJobs: true,
+        notification: 'Searching for aborted jobs...'
+      });
+
+      loads = patches.reduce(function(links, patch) {
         return links.concat(patch.links);
       }, []).map(function(link) {
         return ajax('GET', '/job?link=' + link).then(function(job) {
@@ -108,33 +119,31 @@ define(function(require) {
         });
       });
 
-      RSVP.all(services).finally(function() {
-        if (!jobs.length) {
-          updateProps({
-            notification: 'No aborted jobs were found.'
-          });
+      RSVP.all(loads).finally(function() {
+        var retriggers;
 
-          return;
-        }
+        nrJobs = jobs.length;
 
-        updateProps({
-          abortedJobs: jobs,
-          isRetriggeringAbortedJobs: true
-        });
+        if (nrJobs) {
+          notify(nrJobs + ' aborted jobs will be retriggered.');
 
-        return RSVP.all(jobs.map(function(job) {
-          return ajax('GET', '/job/retrigger?link=' + job.url).then(function() {
-            jobs.splice(jobs.indexOf(job), 1);
+          retriggers = jobs.map(function(job) {
+            return ajax('GET', '/job/retrigger?link=' + job.url).then(function() {
+              jobs.splice(jobs.indexOf(job), 1);
 
-            updateProps({
-              abortedJobs: jobs
+              notify((nrJobs - jobs.length) + ' aborted jobs were retriggered, ' +
+                jobs.length + ' job(s) remain.');
             });
           });
-        }));
+        }
+
+        return RSVP.all(retriggers);
       }).finally(function() {
         updateProps({
           isRetriggeringAbortedJobs: false,
-          abortedJobs: undefined
+          notification: nrJobs === 0 ?
+            'No aborted jobs were found.' :
+            nrJobs + ' aborted jobs were retriggered.'
         });
       });
     },

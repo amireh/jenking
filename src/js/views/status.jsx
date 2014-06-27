@@ -36,12 +36,10 @@ define(function(require) {
               preferences={this.props.preferences} />
           }
 
-          {(this.props.error || this.props.notification) &&
-            <Messages
-              error={this.props.error}
-              notification={this.props.notification}
-              />
-          }
+          <Messages
+            error={this.props.error}
+            notification={this.props.notification}
+            />
 
           {this.props.connected && this.renderConnectedButtons()}
 
@@ -107,6 +105,12 @@ define(function(require) {
       e.preventDefault();
 
       Actions.retrigger(this.props.job.url);
+    },
+
+    retriggerAbortedJobs: function(e) {
+      e.preventDefault();
+
+      Actions.retriggerAbortedJobs(this.props.patches);
     },
 
     disconnect: function(e) {
