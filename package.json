@@ -49,6 +49,6 @@
     "grunt": "~0.4.1",
     "grunt-contrib-connect": "0.7.x",
     "grunt-connect-proxy": "^0.1.10",
-    "jenkingd": ">=1.1.0"
+    "jenkingd": ">=1.1.1"
   }
 }
