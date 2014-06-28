@@ -48,13 +48,6 @@ define(function(require) {
         }
       }
 
-      // Consume any notification as it got handled in the last render pass.
-      //
-      // This prevents it from "sticking" around past dismissal.
-      if (prevProps.notification) {
-        updateProps({ notification: undefined });
-      }
-
       if (prevProps.connected !== this.props.connected) {
         this.props.connected ? this.start() : this.stop();
       }

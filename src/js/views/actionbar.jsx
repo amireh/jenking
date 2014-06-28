@@ -3,9 +3,8 @@ define(function(require) {
   var React = require('react');
   var Actions = require('actions');
   var Settings = require('jsx!./settings');
-  var Messages = require('jsx!./messages');
 
-  var Status = React.createClass({
+  var Actionbar = React.createClass({
     getInitialState: function() {
       return {
         showingSettings: false
@@ -15,8 +14,6 @@ define(function(require) {
     getDefaultProps: function() {
       return {
         connected: false,
-        /** Errors get displayed in a nice bar, JSON.stringify() style */
-        error: undefined,
         /** Patch is needed for reloading its jobs */
         patch: undefined,
         job: undefined,
@@ -29,17 +26,12 @@ define(function(require) {
 
     render: function() {
       return(
-        <footer id="status">
+        <footer id="actionbar">
           {this.state.showingSettings &&
             <Settings
               onClose={this.hideSettings}
               preferences={this.props.preferences} />
           }
-
-          <Messages
-            error={this.props.error}
-            notification={this.props.notification}
-            />
 
           {this.props.connected && this.renderConnectedButtons()}
 
@@ -132,5 +124,5 @@ define(function(require) {
     }
   });
 
-  return Status;
+  return Actionbar;
 });

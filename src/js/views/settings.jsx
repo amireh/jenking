@@ -78,7 +78,7 @@ define(function(require) {
       e.preventDefault();
 
       Actions.savePreferences({
-        retriggerFrequency: Math.max(parseInt(this.state.retriggerFrequency), 60)
+        retriggerFrequency: Math.max(parseInt(this.state.retriggerFrequency, 10), 60)
       });
 
       this.props.onClose();

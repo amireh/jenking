@@ -4,9 +4,10 @@ define(function(require) {
   var findBy = require('util/find_by');
   var Brain = require('jsx!./brain');
   var Login = require('jsx!./login');
-  var Status = require('jsx!./status');
+  var Actionbar = require('jsx!./actionbar');
   var PatchTree = require('jsx!./patch_tree');
   var Inspector = require('jsx!./inspector');
+  var Statusbar = require('jsx!./statusbar');
 
   var getActivePatch = function(props) {
     return findBy(props.patches, 'id', props.activePatchId);
@@ -73,6 +74,11 @@ define(function(require) {
               isLoadingJobs={this.props.isLoadingJobs}
               activeJobId={this.props.activeJobId} />
             }
+
+            <Statusbar
+              error={this.props.error}
+              notification={this.props.notification}
+              />
           </main>
 
           <Inspector
@@ -82,10 +88,8 @@ define(function(require) {
             isLoadingLog={this.props.isLoadingLog}
             connected={this.props.connected} />
 
-          <Status
-            key="status"
-            error={this.props.error}
-            notification={this.props.notification}
+          <Actionbar
+            key="actionbar"
             connected={this.props.connected}
             isLoadingPatches={this.props.isLoadingPatches}
             patch={activePatch}

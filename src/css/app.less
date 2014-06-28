@@ -109,6 +109,7 @@ button, .btn {
     bottom: @status-height;
     left: 0;
     padding: 0 @spacing;
+    overflow: auto;
   }
 
   #inspector {
@@ -122,7 +123,7 @@ button, .btn {
     border-left: 5px solid @border-bg;
   }
 
-  #status {
+  #actionbar {
     position: absolute;
     top: auto;
     right: @inspector-width;
@@ -133,9 +134,9 @@ button, .btn {
     background: #008000;
   }
 
-  #errorBox {
+  #statusbar {
     position: absolute;
-    bottom: 100%;
+    bottom: 0;
     background: #ff0000;
     left: 0;
     right: 0;
