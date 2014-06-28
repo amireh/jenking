@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
+  var Console = require('jsx!./inspector/console');
+  var Stars = require('jsx!./inspector/stars');
 
   /**
    * @class Inspector
@@ -8,47 +10,61 @@ define(function(require) {
    * Inspects a single patch, showing its build job status and log output.
    */
   var Inspector = React.createClass({
+    getInitialState: function() {
+      return {
+        tab: 'console'
+      };
+    },
+
     getDefaultProps: function() {
       return {
         patch: undefined,
         log: {},
         isLoadingLog: false,
-        connected: false
+        connected: false,
+        starred: []
       };
     },
 
     render: function() {
       var patch = this.props.patch;
+      var tab = this.state.tab;
 
       return(
         <div id="inspector">
-          {patch ?
-            this.renderPatch(patch) :
-            this.props.connected ?
-              <p>Choose a patch to inspect.</p> :
-              false
-          }
+          <div className="active-tab">
+            {tab === 'console' &&
+              <Console
+                patch={patch}
+                isLoadingLog={this.props.isLoadingLog}
+                log={this.props.log} />
+            }
+            {tab === 'starred' &&
+              <Stars starred={this.props.starred} />
+            }
+          </div>
 
-          {this.props.isLoadingLog && <p>Loading job console output...</p>}
+          <div className="tabs" onClick={this.switchTab}>
+            <button
+              name="console"
+              className={tab === 'console' ? 'active' : null}
+              children="Console" />
+            <button
+              name="starred"
+              className={tab === 'starred' ? 'active' : null}
+              children="Starred" />
+          </div>
         </div>
       );
     },
 
+    switchTab: function(e) {
+      var tab = e.target.name;
+      e.preventDefault();
 
-    renderPatch: function(patch) {
-      return (
-        <div>
-          <h2>{patch.subject}</h2>
-
-          {!this.props.log.log && !this.props.isLoadingLog &&
-            <p>Choose a Jenkins job to inspect.</p>
-          }
-
-          <pre
-            className="console"
-            children={this.props.log.log} />
-        </div>
-      );
+      if (tab) {
+        this.setState({ tab: tab });
+      }
     }
   });
 

@@ -41,6 +41,8 @@ define(function(require) {
         jobs: [],
         log: undefined,
 
+        preferences: {},
+
         isConnecting: false,
         isLoadingPatches: false,
         isLoadingJobs: false,
@@ -72,7 +74,9 @@ define(function(require) {
               activePatchId={this.props.activePatchId}
               jobs={this.props.jobs}
               isLoadingJobs={this.props.isLoadingJobs}
-              activeJobId={this.props.activeJobId} />
+              activeJobId={this.props.activeJobId}
+              starred={this.props.preferences.starred}
+              />
             }
 
             <Statusbar
@@ -86,7 +90,8 @@ define(function(require) {
             patch={activePatch}
             log={this.props.log}
             isLoadingLog={this.props.isLoadingLog}
-            connected={this.props.connected} />
+            connected={this.props.connected}
+            starred={this.props.preferences.starred} />
 
           <Actionbar
             key="actionbar"

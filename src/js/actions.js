@@ -1,9 +1,9 @@
-/* global App: false */
 define(function(require) {
   var ajax = require('ajax');
   var updateProps = require('update_props');
   var findBy = require('util/find_by');
   var preferences = require('preferences');
+  var Registry = require('registry');
   var RSVP = require('rsvp');
   var notify = function(message) {
     updateProps({ notification: message });
@@ -63,7 +63,8 @@ define(function(require) {
       });
 
       services = links.map(function(link) {
-        return ajax('GET', '/job?link=' + link).then(function(job) {
+        var encodedLink = encodeURIComponent(link);
+        return ajax('GET', '/job?link=' + encodedLink).then(function(job) {
           jobs.push(job);
 
           updateProps({ jobs: jobs });
@@ -86,12 +87,14 @@ define(function(require) {
     },
 
     loadJobLog: function(link) {
+      var encodedLink = encodeURIComponent(link);
+
       updateProps({
         log: undefined,
         isLoadingLog: true
       });
 
-      ajax('GET', '/job/log?link=' + link).then(function(log) {
+      ajax('GET', '/job/log?link=' + encodedLink).then(function(log) {
         updateProps({
           log: log,
           isLoadingLog: false
@@ -112,7 +115,9 @@ define(function(require) {
       loads = patches.reduce(function(links, patch) {
         return links.concat(patch.links);
       }, []).map(function(link) {
-        return ajax('GET', '/job?link=' + link).then(function(job) {
+        var encodedLink = encodeURIComponent(link);
+
+        return ajax('GET', '/job?link=' + encodedLink).then(function(job) {
           if (job.status === 'ABORTED') {
             jobs.push(job);
           }
@@ -128,7 +133,8 @@ define(function(require) {
           notify(nrJobs + ' aborted jobs will be retriggered.');
 
           retriggers = jobs.map(function(job) {
-            return ajax('GET', '/job/retrigger?link=' + job.url).then(function() {
+            var encodedUrl = encodedLink(job.url);
+            return ajax('GET', '/job/retrigger?link=' + encodedUrl).then(function() {
               jobs.splice(jobs.indexOf(job), 1);
 
               notify((nrJobs - jobs.length) + ' aborted jobs were retriggered, ' +
@@ -150,11 +156,12 @@ define(function(require) {
       });
     },
 
-    retrigger: function(jobLink) {
+    retrigger: function(link) {
+      var encodedLink = encodeURIComponent(link);
       updateProps({ isRetriggering: true });
 
-      ajax('GET', '/job/retrigger?link=' + jobLink).then(function(jobStatus) {
-        var jobs = App.props.jobs;
+      ajax('GET', '/job/retrigger?link=' + link).then(function(jobStatus) {
+        var jobs = Registry.get('jobs');
         var job = findBy(jobs, 'id', jobStatus.id);
         var jobIndex = jobs.indexOf(job);
 
@@ -173,6 +180,50 @@ define(function(require) {
 
     savePreferences: function(prefs) {
       preferences.save(prefs);
+    },
+
+    starJob: function(link) {
+      var starredJobs = preferences.get('starred') || [];
+      var index, star, job;
+      var patch = Registry.get('patches').filter(function(patch) {
+        return patch.links.indexOf(link) !== -1;
+      })[0];
+
+
+      if (!patch) {
+        debugger
+        console.error('No patch found with a job for this url:', link);
+        return;
+      }
+
+      star = findBy(starredJobs, 'url', link);
+      index = starredJobs.indexOf(star);
+
+      if (index === -1) {
+        job = findBy(Registry.get('jobs'), 'url', link);
+
+        if (!job) {
+          console.error('No job found with a URL:', link);
+          return;
+        }
+        else if (job.success) {
+          console.error('Can not star a completed job.');
+          return;
+        }
+
+        starredJobs.push({
+          id: job.id,
+          url: link,
+          label: job.label,
+          patchId: patch.id,
+          patchSubject: patch.subject
+        });
+      }
+      else {
+        starredJobs.splice(index, 1);
+      }
+
+      preferences.save({ starred: starredJobs });
     }
   };
 });

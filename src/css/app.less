@@ -56,7 +56,7 @@ button, .btn {
   color: inherit;
   cursor: pointer;
 
-  &:hover, &:focus {
+  &:hover, &:focus, &.active {
     background: #0000ff;
   }
 
@@ -110,17 +110,6 @@ button, .btn {
     left: 0;
     padding: 0 @spacing;
     overflow: auto;
-  }
-
-  #inspector {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    overflow: auto;
-    padding: 0 @spacing;
-    width: @inspector-width;
-    border-left: 5px solid @border-bg;
   }
 
   #actionbar {
@@ -203,9 +192,19 @@ button, .btn {
     .active a {
       font-weight: bold;
     }
+
   }
 }
 
+button.star-btn {
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 @spacing;
+
+  &.active {
+    color: #ffff00;
+  }
+}
 
 ::-webkit-scrollbar {
   width:  15px;
@@ -338,5 +337,42 @@ label {
     left: @spacing;
     padding: @spacing;
     text-align: center;
+  }
+}
+
+
+#inspector {
+  @tabbar-height: 60px;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: @inspector-width;
+  border-left: 5px solid @border-bg;
+
+  .active-tab {
+    overflow: auto;
+    padding: 0 @spacing;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: @tabbar-height;
+    left: 0;
+    background: #000080;
+  }
+
+  .tabs {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: @tabbar-height;
+    padding: @spacing;
+    background: #808080;
+
+    button {
+      margin-right: @spacing;
+    }
   }
 }

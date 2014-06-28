@@ -5,6 +5,7 @@ define(function(require) {
   var React = require('react');
   var AppView = require('jsx!views/app');
   var preferences = require('preferences');
+  var Registry = require('registry');
   var injectPreferences = function() {
     app.setProps({ preferences: preferences.get() });
   };
@@ -17,6 +18,10 @@ define(function(require) {
   //>>excludeStart("production", pragmas.production);
   require('debug')(app);
   //>>excludeEnd("production");
+
+  Registry.get = function(key) {
+    return app.props[key];
+  };
 
   GLOBAL.App = app;
   return app;

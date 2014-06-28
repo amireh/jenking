@@ -4,15 +4,17 @@ define(function(require) {
   var Checkmark = require('jsx!./components/checkmark');
   var Cross = require('jsx!./components/cross');
   var Loading = require('jsx!./components/loading');
-  var ajax = require('ajax');
+  var Star = require('jsx!./components/star');
   var updateProps = require('update_props');
+  var findBy = require('util/find_by');
 
   var PatchJobs = React.createClass({
     getDefaultProps: function() {
       return {
         isLoadingJobs: false,
         activeJobId: undefined,
-        jobs: []
+        jobs: [],
+        starred: []
       };
     },
 
@@ -38,7 +40,9 @@ define(function(require) {
 
     renderJob: function(job) {
       var className = this.props.activeJobId === job.id ? 'active' : null;
+      var star = findBy(this.props.starred, 'url', job.url);
       var statusIndicator;
+
       if (job.active) {
         statusIndicator = <Loading />;
       }
@@ -55,6 +59,8 @@ define(function(require) {
             href={job.url}
             onClick={this.inspectJob.bind(null, job.id, job.url)}
             children={job.label} />
+
+          {!job.success && <Star isStarred={!!star} link={job.url} />}
         </li>
       );
     },

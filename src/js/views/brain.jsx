@@ -49,7 +49,12 @@ define(function(require) {
       }
 
       if (prevProps.connected !== this.props.connected) {
-        this.props.connected ? this.start() : this.stop();
+        if (this.props.connected) {
+          this.start();
+        }
+        else {
+          this.stop();
+        }
       }
       else if (
         prevPrefs.retriggerFrequency !== thisPrefs.retriggerFrequency ||

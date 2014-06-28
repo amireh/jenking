@@ -4,7 +4,8 @@ define(function(require) {
   var defaults = {
     query: 'status:open owner:self',
     retriggerAborted: true,
-    retriggerFrequency: 5 * 60
+    retriggerFrequency: 5 * 60,
+    starred: []
   };
 
   var preferences = {
@@ -22,8 +23,16 @@ define(function(require) {
       onChange.push(handler);
     },
 
-    get: function() {
-      return extend({}, defaults, JSON.parse(localStorage.preferences || '{}'));
+    get: function(key) {
+      var prefs = extend({}, defaults,
+        JSON.parse(localStorage.preferences || '{}')
+      );
+
+      if (key) {
+        return prefs[key];
+      }
+
+      return prefs;
     }
   };
 
