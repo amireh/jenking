@@ -110,6 +110,8 @@ button, .btn {
     left: 0;
     padding: 0 @spacing;
     overflow: auto;
+    z-index: 2;
+    margin-right: -5px;
   }
 
   #actionbar {
@@ -128,7 +130,7 @@ button, .btn {
     bottom: 0;
     background: #ff0000;
     left: 0;
-    right: 0;
+    right: 5px;
     line-height: 20px;
 
     &.notification {
@@ -168,6 +170,13 @@ button, .btn {
         width: 28px;
       }
     }
+
+    // Job status indicator
+    .job {
+      .status-indicator {
+        width: 28px;
+      }
+    }
   }
 
   // Job listing status
@@ -181,18 +190,17 @@ button, .btn {
     padding: 0;
     line-height: 24px;
 
-    // Job status indicator
-    li > span:first-child {
-      font-size: 16px;
-      vertical-align: middle;
-      width: 28px;
-      display: inline-block;
-    }
-
     .active a {
       font-weight: bold;
     }
+  }
 
+  .job {
+    .status-indicator {
+      font-size: 16px;
+      vertical-align: middle;
+      display: inline-block;
+    }
   }
 }
 
@@ -373,6 +381,25 @@ label {
 
     button {
       margin-right: @spacing;
+    }
+  }
+}
+
+
+#console-starred {
+  header {
+    font-weight: bold;
+    line-height: 30px;
+  }
+
+  .jobListing {
+    margin-left: @spacing * 2;
+  }
+
+  .job {
+    .status-indicator {
+      margin-right: @spacing;
+      font-size: 14.5px;
     }
   }
 }

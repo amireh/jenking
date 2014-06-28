@@ -91,7 +91,9 @@ define(function(require) {
             log={this.props.log}
             isLoadingLog={this.props.isLoadingLog}
             connected={this.props.connected}
-            starred={this.props.preferences.starred} />
+            starred={this.props.preferences.starred}
+            jobs={this.props.jobs}
+            patches={this.props.patches} />
 
           <Actionbar
             key="actionbar"

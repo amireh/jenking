@@ -2,8 +2,12 @@
 define(function(require) {
   var React = require('react');
   var Star = require('jsx!../components/star');
+  var Job = require('jsx!../job');
+  var Actions = require('actions');
+  var extend = require('util/extend');
+  var findBy = require('util/find_by');
 
-  var Stars = React.createClass({
+  var Starred = React.createClass({
     render: function() {
       // Group them by patch for some hierarchy:
       var stars = this.props.starred.reduce(function(hsh, star) {
@@ -26,6 +30,8 @@ define(function(require) {
             <p>
               The following jobs will be automatically retriggered until they
               succeeed.
+              You can choose to <a onClick={this.retrigger}>manually retrigger
+              them</a> as well.
             </p> :
             [
               <p>You have not starred any jobs.</p>,
@@ -43,20 +49,25 @@ define(function(require) {
       var stars = allStars[patchId];
 
       return [
-        <h3>{stars.label}</h3>,
-        <ul>
+        <header>{stars.label}</header>,
+        <ul className="jobListing">
           {stars.jobs.map(this.renderStarredJob)}
         </ul>
       ];
     },
 
     renderStarredJob: function(star) {
-      return (
-        <li key={star.id}>
-          <a onClick={this.consume} href={star.url}>{star.label}</a>
-          <Star isStarred link={star.url} />
-        </li>
-      );
+      var jobProps = extend({
+        onClick: this.consume,
+      }, findBy(this.props.jobs, 'id', star.id));
+
+      return Job(jobProps);
+    },
+
+    retrigger: function(e) {
+      this.consume(e);
+
+      Actions.retriggerStarredJobs();
     },
 
     consume: function(e) {
@@ -64,5 +75,5 @@ define(function(require) {
     }
   });
 
-  return Stars;
+  return Starred;
 });

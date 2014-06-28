@@ -9,7 +9,8 @@ define(function(require) {
     getDefaultProps: function() {
       return {
         preferences: {
-          retriggerFrequency: 5 * 60
+          retriggerFrequency: 5 * 60,
+          starred: []
         }
       };
     },
@@ -23,7 +24,7 @@ define(function(require) {
     },
 
     componentDidUpdate: function(prevProps) {
-      var patch, job;
+      var patch, job, jobs;
       var prevPrefs = prevProps.preferences;
       var thisPrefs = this.props.preferences;
 
@@ -56,23 +57,29 @@ define(function(require) {
           this.stop();
         }
       }
-      else if (
-        prevPrefs.retriggerFrequency !== thisPrefs.retriggerFrequency ||
-        prevPrefs.retriggerAborted !== thisPrefs.retriggerAborted) {
+      else if (prevPrefs.retriggerFrequency !== thisPrefs.retriggerFrequency) {
         this.stop();
         this.start();
+      }
+
+      if (prevPrefs.starred !== thisPrefs.starred) {
+        jobs = this.props.jobs;
+
+        thisPrefs.starred.forEach(function(star) {
+          if (!findBy(jobs, 'id', star.id)) {
+            Actions.loadJob(star.link);
+          }
+        });
       }
     },
 
     start: function() {
       var frequency;
 
-      if (this.props.preferences.retriggerAborted) {
-        frequency = Math.max(this.props.preferences.retriggerFrequency, 60);
-        this.autoRetrigger = setInterval(this.retrigger, frequency * 1000);
+      frequency = Math.max(this.props.preferences.retriggerFrequency, 60);
+      this.autoRetrigger = setInterval(this.retrigger, frequency * 1000);
 
-        console.info('Retriggering aborted jobs every', frequency, 'seconds.');
-      }
+      console.info('Retriggering jobs every', frequency, 'seconds.');
     },
 
     stop: function() {
@@ -87,7 +94,13 @@ define(function(require) {
     },
 
     retrigger: function() {
-      Actions.retriggerAbortedJobs(this.props.patches);
+      if (this.preferences.retriggerAborted) {
+        Actions.retriggerAbortedJobs(this.props.patches);
+      }
+
+      if (this.preferences.starred.length) {
+        Actions.retriggerStarredJobs(this.preferences.starred);
+      }
     }
   });
 

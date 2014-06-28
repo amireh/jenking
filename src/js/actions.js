@@ -4,12 +4,15 @@ define(function(require) {
   var findBy = require('util/find_by');
   var preferences = require('preferences');
   var Registry = require('registry');
+  var JobCollection = require('collections/jobs');
   var RSVP = require('rsvp');
   var notify = function(message) {
     updateProps({ notification: message });
   };
 
-  return {
+  var Jobs = new JobCollection('jobs');
+
+  var Actions = {
     connect: function(username, password) {
       updateProps({ isConnecting: true });
 
@@ -52,49 +55,40 @@ define(function(require) {
     },
 
     loadJobs: function(links) {
-      var jobs = [];
       var services;
 
       updateProps({
         isLoadingJobs: links.length > 0,
-        jobs: [],
         activeJobId: null,
         log: undefined // reset any loaded log
       });
 
       services = links.map(function(link) {
-        var encodedLink = encodeURIComponent(link);
-        return ajax('GET', '/job?link=' + encodedLink).then(function(job) {
-          jobs.push(job);
-
-          updateProps({ jobs: jobs });
-        }, function(payload) {
-          if (payload.xhr.status === 404) {
-            updateProps({
-              error: {
-                message: 'Build could no longer be retrieved from Jenkins. ' +
-                'This probably means it is too old.'
-              }
-            });
-          }
-
+        return Jobs.find(link).then(function(job) {
+          Jobs.add(job);
         });
       });
 
-      RSVP.all(services).then(function() {
+      RSVP.all(services).finally(function() {
         updateProps({ isLoadingJobs: false });
       });
     },
 
-    loadJobLog: function(link) {
-      var encodedLink = encodeURIComponent(link);
+    loadJob: function(link) {
+      Jobs.find(link).then(function(job) {
+        Jobs.add(job);
+      });
+    },
+
+    loadJobLog: function(rawLink) {
+      var link = encodeURIComponent(rawLink);
 
       updateProps({
         log: undefined,
         isLoadingLog: true
       });
 
-      ajax('GET', '/job/log?link=' + encodedLink).then(function(log) {
+      ajax('GET', '/job/log?link=' + link).then(function(log) {
         updateProps({
           log: log,
           isLoadingLog: false
@@ -102,78 +96,59 @@ define(function(require) {
       });
     },
 
-    retriggerAbortedJobs: function(patches) {
-      var jobs = [];
-      var nrJobs;
-      var loads;
-
-      updateProps({
-        isRetriggeringAbortedJobs: true,
-        notification: 'Searching for aborted jobs...'
-      });
-
-      loads = patches.reduce(function(links, patch) {
+    loadAllJobs: function() {
+      var loads = Registry.get('patches').reduce(function(links, patch) {
         return links.concat(patch.links);
       }, []).map(function(link) {
-        var encodedLink = encodeURIComponent(link);
-
-        return ajax('GET', '/job?link=' + encodedLink).then(function(job) {
-          if (job.status === 'ABORTED') {
-            jobs.push(job);
-          }
+        return Jobs.find(link).then(function(job) {
+          Jobs.add(job);
         });
       });
 
-      RSVP.all(loads).finally(function() {
-        var retriggers;
+      return RSVP.all(loads);
+    },
 
-        nrJobs = jobs.length;
+    retriggerAbortedJobs: function() {
+      notify('Searching for aborted jobs...');
 
-        if (nrJobs) {
-          notify(nrJobs + ' aborted jobs will be retriggered.');
+      Actions.loadAllJobs().finally(function() {
+        var retriggers, jobCount;
+        var abortedJobs = Jobs.getAll().filter(function(job) {
+          return job.status === 'ABORTED';
+        });
 
-          retriggers = jobs.map(function(job) {
-            var encodedUrl = encodedLink(job.url);
-            return ajax('GET', '/job/retrigger?link=' + encodedUrl).then(function() {
-              jobs.splice(jobs.indexOf(job), 1);
+        jobCount = abortedJobs.length;
 
-              notify((nrJobs - jobs.length) + ' aborted jobs were retriggered, ' +
-                jobs.length + ' job(s) remain.');
-            });
+        if (jobCount) {
+          notify(jobCount + ' aborted jobs will be retriggered.');
+
+          retriggers = abortedJobs.map(function(job) {
+            Jobs.retrigger(job.url);
           });
         }
 
-        return RSVP.all(retriggers);
-      }).finally(function() {
-        updateProps({
-          isRetriggeringAbortedJobs: false,
-          notification: nrJobs === 0 ?
-            'No aborted jobs were found.' :
-            nrJobs + ' aborted jobs were retriggered.'
+        return RSVP.all(retriggers).finally(function() {
+          return jobCount;
         });
+      }).finally(function(jobCount) {
+        var message = jobCount === 0 ?
+          'No aborted jobs were found.' :
+          jobCount + ' aborted jobs were retriggered.';
 
-        return nrJobs > 0;
+        notify(message);
+      });
+    },
+
+    retriggerStarredJobs: function() {
+      preferences.get('starred').forEach(function(star) {
+        Jobs.retrigger(star.link);
       });
     },
 
     retrigger: function(link) {
-      var encodedLink = encodeURIComponent(link);
       updateProps({ isRetriggering: true });
 
-      ajax('GET', '/job/retrigger?link=' + link).then(function(jobStatus) {
-        var jobs = Registry.get('jobs');
-        var job = findBy(jobs, 'id', jobStatus.id);
-        var jobIndex = jobs.indexOf(job);
-
-        jobs[jobIndex] = jobStatus;
-
-        updateProps({
-          error: undefined,
-          jobs: jobs
-        });
-      }, function(payload) {
-        updateProps({ error: payload.error });
-      }).finally(function() {
+      Jobs.retrigger(link).finally(function() {
         updateProps({ isRetriggering: false });
       });
     },
@@ -189,14 +164,12 @@ define(function(require) {
         return patch.links.indexOf(link) !== -1;
       })[0];
 
-
       if (!patch) {
-        debugger
         console.error('No patch found with a job for this url:', link);
         return;
       }
 
-      star = findBy(starredJobs, 'url', link);
+      star = findBy(starredJobs, 'link', link);
       index = starredJobs.indexOf(star);
 
       if (index === -1) {
@@ -213,7 +186,7 @@ define(function(require) {
 
         starredJobs.push({
           id: job.id,
-          url: link,
+          link: link,
           label: job.label,
           patchId: patch.id,
           patchSubject: patch.subject
@@ -226,4 +199,6 @@ define(function(require) {
       preferences.save({ starred: starredJobs });
     }
   };
+
+  return Actions;
 });

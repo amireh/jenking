@@ -19,7 +19,6 @@ define(function(require) {
         job: undefined,
         isRetriggering: false,
         isLoadingPatches: false,
-        isRetriggeringAbortedJobs: false,
         preferences: {}
       };
     },
@@ -62,18 +61,6 @@ define(function(require) {
           children={this.props.isLoadingPatches ? 'Loading...' : 'Reload'}
           />
         ,
-
-        <button
-          key="retrigger-aborted"
-          disabled={this.isRetriggeringAbortedJobs}
-          onClick={this.retriggerAbortedJobs}
-          children={
-            this.isRetriggeringAbortedJobs ?
-              'Retriggering aborted...' :
-              'Retrigger Aborted'
-          }
-          />
-        ,
         <button
           key="disconnect"
           onClick={this.disconnect}
@@ -97,12 +84,6 @@ define(function(require) {
       e.preventDefault();
 
       Actions.retrigger(this.props.job.url);
-    },
-
-    retriggerAbortedJobs: function(e) {
-      e.preventDefault();
-
-      Actions.retriggerAbortedJobs(this.props.patches);
     },
 
     disconnect: function(e) {

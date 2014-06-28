@@ -60,6 +60,10 @@ define(function(require) {
         onClick: this.inspectPatch.bind(null, patch.id)
       });
 
+      var jobs = this.props.jobs.filter(function(job) {
+        return job.patchId === patch.id;
+      });
+
       return [
         Patch(patchProps),
         patchProps.active && (
@@ -68,7 +72,7 @@ define(function(require) {
             <td colSpan={4}>
               <PatchJobs
                 activeJobId={this.props.activeJobId}
-                jobs={this.props.jobs}
+                jobs={jobs}
                 isLoadingJobs={this.props.isLoadingJobs}
                 starred={this.props.starred} />
             </td>

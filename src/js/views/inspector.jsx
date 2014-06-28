@@ -2,7 +2,8 @@
 define(function(require) {
   var React = require('react');
   var Console = require('jsx!./inspector/console');
-  var Stars = require('jsx!./inspector/stars');
+  var Starred = require('jsx!./inspector/starred');
+  var Aborted = require('jsx!./inspector/aborted');
 
   /**
    * @class Inspector
@@ -19,10 +20,12 @@ define(function(require) {
     getDefaultProps: function() {
       return {
         patch: undefined,
+        patches: [],
         log: {},
         isLoadingLog: false,
         connected: false,
-        starred: []
+        starred: [],
+        jobs: []
       };
     },
 
@@ -40,7 +43,17 @@ define(function(require) {
                 log={this.props.log} />
             }
             {tab === 'starred' &&
-              <Stars starred={this.props.starred} />
+              <Starred starred={this.props.starred} jobs={this.props.jobs} />
+            }
+            {tab === 'aborted' &&
+              <Aborted
+                jobs={this.props.jobs.filter(function(job) {
+                  return job.status === 'ABORTED';
+                })}
+                patches={this.props.patches.map(function(patch) {
+                  return { id: patch.id, subject: patch.subject };
+                })}
+              />
             }
           </div>
 
@@ -53,6 +66,10 @@ define(function(require) {
               name="starred"
               className={tab === 'starred' ? 'active' : null}
               children="Starred" />
+            <button
+              name="aborted"
+              className={tab === 'aborted' ? 'active' : null}
+              children="Aborted" />
           </div>
         </div>
       );

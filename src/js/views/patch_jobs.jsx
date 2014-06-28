@@ -1,12 +1,10 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
-  var Checkmark = require('jsx!./components/checkmark');
-  var Cross = require('jsx!./components/cross');
-  var Loading = require('jsx!./components/loading');
-  var Star = require('jsx!./components/star');
-  var updateProps = require('update_props');
   var findBy = require('util/find_by');
+  var extend = require('util/extend');
+  var updateProps = require('update_props');
+  var Job = require('jsx!./job');
 
   var PatchJobs = React.createClass({
     getDefaultProps: function() {
@@ -39,30 +37,13 @@ define(function(require) {
     },
 
     renderJob: function(job) {
-      var className = this.props.activeJobId === job.id ? 'active' : null;
-      var star = findBy(this.props.starred, 'url', job.url);
-      var statusIndicator;
+      var jobProps = extend({}, job, {
+        selected: this.props.activeJobId === job.id,
+        isStarred: findBy(this.props.starred, 'link', job.url),
+        onClick: this.inspectJob.bind(null, job.id, job.url)
+      });
 
-      if (job.active) {
-        statusIndicator = <Loading />;
-      }
-      else {
-        statusIndicator = job.status === 'SUCCESS' ? <Checkmark /> : <Cross />;
-      }
-
-      return (
-        <li key={'job-' + job.id}>
-          {statusIndicator}
-
-          <a
-            className={className}
-            href={job.url}
-            onClick={this.inspectJob.bind(null, job.id, job.url)}
-            children={job.label} />
-
-          {!job.success && <Star isStarred={!!star} link={job.url} />}
-        </li>
-      );
+      return Job(jobProps);
     },
 
     inspectJob: function(jobId, jobUrl, e) {
