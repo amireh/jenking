@@ -1,5 +1,3 @@
-var GLOBAL = this;
-
 define(function(require) {
   var app;
   var React = require('react');
@@ -15,14 +13,10 @@ define(function(require) {
   preferences.onChange(injectPreferences);
   injectPreferences();
 
-  //>>excludeStart("production", pragmas.production);
-  require('debug')(app);
-  //>>excludeEnd("production");
-
   Registry.get = function(key) {
     return app.props[key];
   };
 
-  GLOBAL.App = app;
+  window.App = app;
   return app;
 });
