@@ -3,3 +3,4 @@
 /www/src
 /www/vendor
 /npm-debug.log
+/src/js/debug/seed.js

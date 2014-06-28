@@ -75,6 +75,7 @@ button, .btn {
     line-height: inherit;
     padding: 0;
     margin: 0;
+    text-align: left;
 
     &:hover {
       color: @hover-fg;
@@ -242,12 +243,26 @@ button, .btn {
   }
 }
 
+input[type="text"],
+input[type="password"] {
+  display: block;
+  line-height: 30px;
+  padding: @spacing / 2;
+  font-family: inherit;
+  border-style: inset;
+  border-width: 2px;
+  border-color: @border-bg;
+  color: inherit;
+  background: transparent;
+  margin: @spacing 0;
+  width: 100%;
+}
+
 input[type="checkbox"] {
   vertical-align: middle;
 }
 
 form#login {
-
   input[type="submit"] {
     margin: @spacing 0;
   }
@@ -257,19 +272,6 @@ label {
   display: block;
   margin-bottom: @spacing;
   font-weight: bold;
-}
-
-input[type="text"],
-input[type="password"] {
-  display: block;
-  line-height: 30px;
-  padding: @spacing / 2;
-  font-family: inherit;
-  border-style: inset;
-  color: inherit;
-  background: transparent;
-  margin: @spacing 0;
-  width: 100%;
 }
 
 @keyframes          pulsate { 0% { opacity: 1; } 100% { opacity: 0.25; } }
@@ -320,6 +322,12 @@ input[type="password"] {
       margin-right: @spacing;
       margin-top: -0.5 * @spacing;
     }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid @border-bg;
+    margin: @spacing 0;
   }
 
   footer {

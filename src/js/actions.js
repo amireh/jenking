@@ -145,6 +145,8 @@ define(function(require) {
             'No aborted jobs were found.' :
             nrJobs + ' aborted jobs were retriggered.'
         });
+
+        return nrJobs > 0;
       });
     },
 

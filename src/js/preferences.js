@@ -3,7 +3,8 @@ define(function(require) {
   var onChange = [];
   var defaults = {
     query: 'status:open owner:self',
-    retriggerAborted: true
+    retriggerAborted: true,
+    retriggerFrequency: 5 * 60
   };
 
   var preferences = {

@@ -4,6 +4,13 @@ define(function(require) {
   var Actions = require('actions');
 
   var Settings = React.createClass({
+    mixins: [ React.addons.LinkedStateMixin ],
+
+    getInitialState: function() {
+      return {
+        retriggerFrequency: this.props.preferences.retriggerFrequency,
+      };
+    },
     getDefaultProps: function() {
       return {
         preferences: {
@@ -30,6 +37,8 @@ define(function(require) {
               />
           </label>
 
+          <hr />
+
           <label>
             <input
               onChange={this.toggleRetriggerAborted}
@@ -37,6 +46,18 @@ define(function(require) {
               type="checkbox" />
             Retrigger aborted jobs automatically
           </label>
+
+          {this.props.preferences.retriggerAborted &&
+            <label>
+              <span className="block">
+                Frequency to check for aborted jobs (seconds)
+              </span>
+
+              <input
+                valueLink={this.linkState('retriggerFrequency')}
+                type="text" />
+            </label>
+          }
 
           <footer>
             <button onClick={this.save}>Close</button>
@@ -55,6 +76,11 @@ define(function(require) {
 
     save: function(e) {
       e.preventDefault();
+
+      Actions.savePreferences({
+        retriggerFrequency: Math.max(parseInt(this.state.retriggerFrequency), 60)
+      });
+
       this.props.onClose();
     }
   });
