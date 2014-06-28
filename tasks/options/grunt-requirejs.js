@@ -40,7 +40,7 @@ module.exports = {
 
       name: 'main',
       include: [ 'main' ],
-      exclude: [ 'text', 'jsx' ]
+      exclude: [ 'text', 'jsx', 'debug' ]
 
       ,onBuildWrite: function (moduleName, path, singleContents) {
         return singleContents.replace(/(text!|jsx!)/g, '');
