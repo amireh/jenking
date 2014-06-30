@@ -1,6 +1,6 @@
 # JENKING
 
-![Jenking Logo](./assets/headshot.png)
+![Jenking Logo](./assets/headshot-display.png)
 
 Would you rather spend your time doing this:
 
