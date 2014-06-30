@@ -1,5 +1,7 @@
 # JENKING
 
+![Jenking Logo](./assets/headshot.png)
+
 Would you rather spend your time doing this:
 
 1. going through each failing gerrit patch page
