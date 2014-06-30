@@ -38,6 +38,7 @@ define(function(require) {
 
     renderJob: function(job) {
       var jobProps = extend({}, job, {
+        key: 'job-'+job.id,
         selected: this.props.activeJobId === job.id,
         isStarred: findBy(this.props.starred, 'link', job.url),
         onClick: this.inspectJob.bind(null, job.id, job.url)

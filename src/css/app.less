@@ -307,6 +307,7 @@ label {
   margin-top: -0.5 * @height;
   margin-left: -0.5 * @width;
   overflow: auto;
+  z-index: 10;
 
   background: @blue;
   padding: @spacing * 2;
@@ -398,7 +399,7 @@ label {
   }
 
   .job {
-    .status-indicator {
+    div.status-indicator {
       margin-right: @spacing;
       font-size: 14.5px;
     }

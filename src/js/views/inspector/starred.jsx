@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 define(function(require) {
   var React = require('react');
-  var Star = require('jsx!../components/star');
   var Job = require('jsx!../job');
   var Actions = require('actions');
   var extend = require('util/extend');
@@ -33,11 +32,11 @@ define(function(require) {
               You can choose to <a onClick={this.retrigger}>manually retrigger
               them</a> as well.
             </p> :
-            [
-              <p>You have not starred any jobs.</p>,
+            <div>
+              <p>You have not starred any jobs.</p>
               <p>Starred jobs will be automatically retriggered for you until
               they succeed, or you un-star them.</p>
-            ]
+            </div>
           }
 
           {Object.keys(stars).map(this.renderPatchStars.bind(null, stars))}
@@ -48,16 +47,21 @@ define(function(require) {
     renderPatchStars: function(allStars, patchId) {
       var stars = allStars[patchId];
 
-      return [
-        <header>{stars.label}</header>,
-        <ul className="jobListing">
-          {stars.jobs.map(this.renderStarredJob)}
-        </ul>
-      ];
+      return (
+        <div key={'patch-'+patchId}>
+          <header>{stars.label}</header>
+
+          <ul className="jobListing">
+            {stars.jobs.map(this.renderStarredJob)}
+          </ul>
+        </div>
+      );
     },
 
     renderStarredJob: function(star) {
       var jobProps = extend({
+        key: 'star-'+star.id,
+        isStarred: true,
         onClick: this.consume,
       }, findBy(this.props.jobs, 'id', star.id));
 

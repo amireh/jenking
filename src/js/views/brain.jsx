@@ -94,12 +94,14 @@ define(function(require) {
     },
 
     retrigger: function() {
-      if (this.preferences.retriggerAborted) {
-        Actions.retriggerAbortedJobs(this.props.patches);
+      var preferences = this.props.preferences;
+
+      if (preferences.retriggerAborted) {
+        Actions.retriggerAbortedJobs();
       }
 
-      if (this.preferences.starred.length) {
-        Actions.retriggerStarredJobs(this.preferences.starred);
+      if (preferences.starred.length) {
+        Actions.retriggerStarredJobs();
       }
     }
   });

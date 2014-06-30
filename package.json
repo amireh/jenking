@@ -1,7 +1,7 @@
 {
   "name": "jenking",
   "description": "Monitor and manage Jenkins jobs triggered by Gerrit.",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "homepage": "https://github.com/amireh/jenking",
   "author": {
     "name": "Ahmad Amireh",
