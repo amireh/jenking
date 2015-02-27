@@ -7,7 +7,11 @@ define(function(require) {
 
   var Patch = React.createClass({
     render: function() {
-      var record = this.props.submitRecords[0].labels;
+      var props = this.props;
+      var record = Object.keys(this.props.labels).reduce(function(arr, key) {
+        arr.push(props.labels[key]);
+        return arr;
+      }, []);
       var crRecord = findBy(record, 'label', 'Code-Review') || {};
       var qaRecord = findBy(record, 'label', 'QA-Review') || {};
       var jenkinsRecord = findBy(record, 'label', 'Verified') || {};
